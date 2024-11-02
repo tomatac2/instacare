@@ -138,6 +138,48 @@ class ProductsTable extends Table
         return $validator;
     }
 
+
+    public function validationAddProduct(Validator $validator): Validator
+            {
+                $validator 
+                ->notEmptyString('name_ar', 'ادخل اسم المنتج بالعربي')
+                ->notEmptyString('name_en', 'ادخل اسم المنتج بالانجليزي')
+                ->notEmptyString('category_id', 'اختر التصنيف الرئيسي')
+                ->notEmptyString('sub_cat_id', 'اختر التصنيف الفرعي')
+                ->notEmptyString('brand_id', 'اختر العلامة التجارية')
+                ->notEmptyString('image', 'ادخل اسم الصورة') 
+                ->notEmptyString('quantity', 'ادخل كمية المنتج') 
+                ->notEmptyString('price', 'ادخل سعر المنتج') 
+                ->notEmptyString('offer_price', 'ادخل سعر المنتج المخفض') 
+                ->notEmptyString('description', 'ادخل وصف المنتج تفصيلاً') 
+                ->add('image', [
+                'mimeType' => [
+                    'rule' => ['mimeType', ['image/jpeg', 'image/png', 'image/gif']],
+                    'message' => __('الملف المرفوع يجب ان يكون صورة من نوع jpg , jpeg , png ')
+                ],
+                    'fileSize' => [
+                        'rule' => ['fileSize', '<=', '5MB'],  // Max size 2MB
+                        'message' => 'حجم الملف اكبر من 5ميجا',
+                    ]
+                ]);
+
+                return $validator ; 
+            }
+    public function validationUpdateProduct(Validator $validator): Validator
+            {
+                $validator 
+                ->notEmptyString('name_ar', 'ادخل اسم المنتج بالعربي')
+                ->notEmptyString('name_en', 'ادخل اسم المنتج بالانجليزي')
+                ->notEmptyString('category_id', 'اختر التصنيف الرئيسي')
+                ->notEmptyString('sub_cat_id', 'اختر التصنيف الفرعي')
+                ->notEmptyString('brand_id', 'اختر العلامة التجارية')
+                ->notEmptyString('quantity', 'ادخل كمية المنتج') 
+                ->notEmptyString('price', 'ادخل سعر المنتج') 
+                ->notEmptyString('offer_price', 'ادخل سعر المنتج المخفض') 
+                ->notEmptyString('description', 'ادخل وصف المنتج تفصيلاً') ;
+
+                return $validator ; 
+            }
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
@@ -147,12 +189,41 @@ class ProductsTable extends Table
      */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
-        $rules->add($rules->isUnique(['name_ar']), ['errorField' => 'name_ar']);
-        $rules->add($rules->isUnique(['name_en']), ['errorField' => 'name_en']);
+        $rules->add($rules->isUnique(['name_ar'],"الدواء مسجل بالفعل "), ['errorField' => 'name_ar']);
+        $rules->add($rules->isUnique(['name_en'],"الدواء مسجل بالفعل"), ['errorField' => 'name_en']);
         $rules->add($rules->existsIn(['category_id'], 'Categories'), ['errorField' => 'category_id']);
         $rules->add($rules->existsIn(['inner_category_id'], 'InnerCategories'), ['errorField' => 'inner_category_id']);
         $rules->add($rules->existsIn(['brand_id'], 'Brands'), ['errorField' => 'brand_id']);
 
         return $rules;
+    }
+
+    /////////////////
+
+    function showProductOnHome($obj){
+        $getPro  = $this->findById($obj["productID"]?$obj["productID"]:0)->first();
+        
+        if($getPro){
+            $getPro->show_on_home = $obj["selectionID"];
+            $this->save($getPro) ? $res = ["success"=>true , "msg"=>"تم الحفظ"] : $res = ["success"=>false , "msg"=>"selection id is missing"] ; 
+        }else{
+            $res = ["success"=>false , "msg"=>"prodcut id is missing"] ; 
+        }
+        return $res ; 
+    }
+
+////////
+    function getProductsBySectionId($sectionID){
+        $q  = $this->find()
+                ->where([
+                    "OR"=>[
+                        ["show_on_home"=>$sectionID?$sectionID:1 , 'most_selling'=>'on' ], 
+                        ["show_on_home"=>$sectionID?$sectionID:1 ]
+                    ]
+                  ])
+                ->limit(10)
+                ->toArray();
+        
+        return $q ; 
     }
 }

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
+use App\Hellpers\UploadFile;
 
 /**
  * Brands Controller
@@ -17,24 +18,14 @@ class BrandsController extends AppController
      */
     public function index()
     {
+        $this->viewBuilder()->setLayout("dashboard");
         $query = $this->Brands->find();
         $brands = $this->paginate($query);
 
         $this->set(compact('brands'));
     }
 
-    /**
-     * View method
-     *
-     * @param string|null $id Brand id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $brand = $this->Brands->get($id, contain: ['Products']);
-        $this->set(compact('brand'));
-    }
+ 
 
     /**
      * Add method
@@ -43,15 +34,20 @@ class BrandsController extends AppController
      */
     public function add()
     {
+        $this->viewBuilder()->setLayout("dashboard");
         $brand = $this->Brands->newEmptyEntity();
         if ($this->request->is('post')) {
-            $brand = $this->Brands->patchEntity($brand, $this->request->getData());
+            $brand = $this->Brands->patchEntity($brand, $this->request->getData(),['validate'=>'addBrand']);
+
+            //upload file
+            !$brand->getErrors()   ? $uploadFile = UploadFile::uploadSinglePhoto(["photoName"=>"image" , "path"=>"library/brands" ]) : "";  
+            $brand->photo = $uploadFile["name"]; 
+
             if ($this->Brands->save($brand)) {
-                $this->Flash->success(__('The brand has been saved.'));
+                $this->Flash->success(__('تم الحفظ بنجاح'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The brand could not be saved. Please, try again.'));
         }
         $this->set(compact('brand'));
     }
@@ -65,15 +61,20 @@ class BrandsController extends AppController
      */
     public function edit($id = null)
     {
+        $this->viewBuilder()->setLayout("dashboard");
         $brand = $this->Brands->get($id, contain: []);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $brand = $this->Brands->patchEntity($brand, $this->request->getData());
+            $oldImg = $brand["photo"] ; 
+            //upload file
+            !$brand->getErrors()  ? $uploadFile = UploadFile::uploadSinglePhoto(["photoName"=>"image" , "path"=>"library/brands" ]) : "";  
+            $uploadFile["code"] == 200 ?   $brand->photo = $uploadFile["name"] 
+                                        :  $brand->photo = $oldImg ; 
             if ($this->Brands->save($brand)) {
-                $this->Flash->success(__('The brand has been saved.'));
+                $this->Flash->success(__('تم الحفظ بنجاح'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The brand could not be saved. Please, try again.'));
         }
         $this->set(compact('brand'));
     }

@@ -16,7 +16,7 @@ return [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    'debug' => filter_var(env('DEBUG', 1), FILTER_VALIDATE_BOOLEAN),
+    'debug' => filter_var(env('DEBUG', 0), FILTER_VALIDATE_BOOLEAN),
 
     /*
      * Configure basic information about the application.
@@ -55,6 +55,9 @@ return [
         'dir' => 'src',
         'webroot' => 'webroot',
         'wwwRoot' => WWW_ROOT,
+        ///////////////////////////~~~~~~~~~~~~~~~~~~~~~~~~
+       // 'uploadedFilesAsObjects' => false,  //to disabled error lamains
+        ///////////////////////////~~~~~~~~~~~~~~~~~~~~~~~~
         //'baseUrl' => env('SCRIPT_NAME'),
         'fullBaseUrl' => false,
         'imageBaseUrl' => 'img/',

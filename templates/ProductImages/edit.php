@@ -19,11 +19,11 @@
     </aside>
     <div class="column column-80">
         <div class="productImages form content">
-            <?= $this->Form->create($productImage) ?>
+            <?= $this->Form->create($productImage, ['type' => 'file']) ?>
             <fieldset>
-                <legend><?= __('Edit Product Image') ?></legend>
+                <legend><?= __('تحديث الصورة') ?></legend>
                 <?php
-                    echo $this->Form->control('photo');
+                    echo $this->Form->control('photo',['type'=>'file']);
                     echo $this->Form->control('product_id', ['options' => $products, 'empty' => true]);
                 ?>
             </fieldset>

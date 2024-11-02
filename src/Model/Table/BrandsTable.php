@@ -71,6 +71,25 @@ class BrandsTable extends Table
         return $validator;
     }
 
+    public function validationAddBrand(Validator $validator): Validator
+    {
+        $validator ->notEmptyString('name', 'ادخل اسم العلامة التجارية')
+                   ->notEmptyString('photo', 'ادخل اسم الصورة') 
+                   ->add('image', [
+                    'mimeType' => [
+                        'rule' => ['mimeType', ['image/jpeg', 'image/png', 'image/gif']],
+                        'message' => __('الملف المرفوع يجب ان يكون صورة من نوع jpg , jpeg , png ')
+                    ],
+                       'fileSize' => [
+                           'rule' => ['fileSize', '<=', '5MB'],  // Max size 2MB
+                           'message' => 'حجم الملف اكبر من 5ميجا',
+                       ]
+                   ]);
+     
+
+        return $validator;
+    }
+    
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -17,7 +19,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Cake\Controller\Controller;
-
+use Cake\ORM\TableRegistry;
 /**
  * Application Controller
  *
@@ -43,6 +45,11 @@ class AppController extends Controller
 
         $this->loadComponent('Flash');
 
+       
+        $getCatsAnsSubCats =  TableRegistry::getTableLocator()->get('Categories')->getCatsAndSubCats4Header();
+       // dd($getCatsAnsSubCats);
+
+        $this->set(compact('getCatsAnsSubCats'));
         /*
          * Enable the following component for recommended CakePHP form protection settings.
          * see https://book.cakephp.org/5/en/controllers/components/form-protection.html

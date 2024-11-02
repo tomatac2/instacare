@@ -81,6 +81,22 @@ class InnerCategoriesTable extends Table
         return $validator;
     }
 
+    public function validationAddSubCat(Validator $validator): Validator
+    {
+        $validator
+                    ->notEmptyString('category_id', 'اختر التصنيف الرئيسي')
+                    ->notEmptyString('name', 'ادخل اسم التصنيف الفرعي');
+     
+
+        return $validator;
+    }
+    public function validationUpdateSubCat(Validator $validator): Validator
+    {
+        $validator ->notEmptyString('name', 'ادخل اسم التصنيف')   ;
+     
+
+        return $validator;
+    }
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.

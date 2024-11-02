@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
-
+use App\Hellpers\UploadFile;
 /**
  * Categories Controller
  *
@@ -17,8 +17,9 @@ class CategoriesController extends AppController
      */
     public function index()
     {
+        $this->viewBuilder()->setLayout("dashboard");
         $query = $this->Categories->find();
-        $categories = $this->paginate($query);
+        $categories = $this->paginate($query,['limit'=>6]);
 
         $this->set(compact('categories'));
     }
@@ -43,15 +44,19 @@ class CategoriesController extends AppController
      */
     public function add()
     {
+        $this->viewBuilder()->setLayout("dashboard");
         $category = $this->Categories->newEmptyEntity();
         if ($this->request->is('post')) {
-            $category = $this->Categories->patchEntity($category, $this->request->getData());
+            $category = $this->Categories->patchEntity($category, $this->request->getData() , ['validate'=>'addCat']);
+                    
+            //upload file
+            !$category->getErrors()   ? $uploadFile = UploadFile::uploadSinglePhoto(["photoName"=>"image" , "path"=>"library/categories" ]) : "";  
+            $category->photo = $uploadFile["name"]; 
+          
             if ($this->Categories->save($category)) {
-                $this->Flash->success(__('The category has been saved.'));
-
+                $this->Flash->success(__('تم الحفظ بنجاح'));
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The category could not be saved. Please, try again.'));
         }
         $this->set(compact('category'));
     }
@@ -65,15 +70,22 @@ class CategoriesController extends AppController
      */
     public function edit($id = null)
     {
+        $this->viewBuilder()->setLayout("dashboard");
         $category = $this->Categories->get($id, contain: []);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $category = $this->Categories->patchEntity($category, $this->request->getData());
+            $category = $this->Categories->patchEntity($category, $this->request->getData() , ['validate'=>'updateCat']);
+
+            $oldImg = $category["photo"] ; 
+            //upload file
+            !$category->getErrors()  ? $uploadFile = UploadFile::uploadSinglePhoto(["photoName"=>"image" , "path"=>"library/categories" ]) : "";  
+            $uploadFile["code"] == 200 ?   $category->photo = $uploadFile["name"] 
+                                        :  $category->photo = $oldImg ; 
+
             if ($this->Categories->save($category)) {
-                $this->Flash->success(__('The category has been saved.'));
+                $this->Flash->success(__('تم الحفظ بنجاح'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The category could not be saved. Please, try again.'));
         }
         $this->set(compact('category'));
     }

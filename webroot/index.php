@@ -15,6 +15,11 @@
  * @license       MIT License (https://opensource.org/licenses/mit-license.php)
  */
 
+
+ $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'?'https':'http';
+ $protocol = isset($_SERVER["HTTPS"]) ? 'https' : 'http';
+ 
+ define('URL', $protocol."://".$_SERVER['HTTP_HOST'].'/');
 // For built-in server
 if (PHP_SAPI === 'cli-server') {
     $_SERVER['PHP_SELF'] = '/' . basename(__FILE__);

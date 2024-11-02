@@ -4,49 +4,50 @@
  * @var iterable<\App\Model\Entity\InnerCategory> $innerCategories
  */
 ?>
-<div class="innerCategories index content">
-    <?= $this->Html->link(__('New Inner Category'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Inner Categories') ?></h3>
-    <div class="table-responsive">
-        <table>
+<div class="categories index content card basic-data-table">
+    <h3><?= __('التصنيفات الفرعية') ?></h3>
+    <div class="table-responsive card-body">
+        <table class="table bordered-table mb-0 dataTable">
             <thead>
                 <tr>
-                    <th><?= $this->Paginator->sort('id') ?></th>
-                    <th><?= $this->Paginator->sort('name') ?></th>
-                    <th><?= $this->Paginator->sort('category_id') ?></th>
-                    <th><?= $this->Paginator->sort('photo') ?></th>
-                    <th><?= $this->Paginator->sort('created') ?></th>
-                    <th><?= $this->Paginator->sort('modified') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
+                    <th><?= $this->Paginator->sort('التصنيف الفرعي') ?></th>
+                    <th><?= $this->Paginator->sort('التصنيف الرئيسي') ?></th>
+                    <th><?= $this->Paginator->sort('الصورة') ?></th>
+                    <th class="actions"><?= __('الخصائص') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($innerCategories as $innerCategory): ?>
                 <tr>
-                    <td><?= $this->Number->format($innerCategory->id) ?></td>
                     <td><?= h($innerCategory->name) ?></td>
-                    <td><?= $innerCategory->hasValue('category') ? $this->Html->link($innerCategory->category->name, ['controller' => 'Categories', 'action' => 'view', $innerCategory->category->id]) : '' ?></td>
-                    <td><?= h($innerCategory->photo) ?></td>
-                    <td><?= h($innerCategory->created) ?></td>
-                    <td><?= h($innerCategory->modified) ?></td>
+                    <td><?= $innerCategory->category->name ?></td>
+                    <td><img src="<?= $this->Url->build('/').$innerCategory->photo ?>" width="100" alt="" srcset=""></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $innerCategory->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $innerCategory->id]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $innerCategory->id], ['confirm' => __('Are you sure you want to delete # {0}?', $innerCategory->id)]) ?>
+                        <a href="<?=$this->Url->build('/').'innerCategories/edit/'.$innerCategory->id?>" class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center">
+                        <iconify-icon icon="lucide:edit"></iconify-icon>
+                        </a>
+
+                        <div class="w-32-px h-32-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center">
+                            
+                            <?= $this->Form->postLink('<iconify-icon icon="mingcute:delete-2-line"> </iconify-icon>',
+                                ['action' => 'delete', $innerCategory->id],
+                                ['confirm' => __('سيتم حذف '.$innerCategory["name"]) , 'escape' => false, ]) 
+                            ?>
+                        </div>
                     </td>
+         
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-    <div class="paginator">
+    <div class="paginator dt-paging paging_full_numbers">
         <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
+            <?= $this->Paginator->first('<< ' . __('أول')) ?>
+            <?= $this->Paginator->prev('< ' . __('سابق')) ?>
             <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
+            <?= $this->Paginator->next(__('تالي') . ' >') ?>
+            <?= $this->Paginator->last(__('أخير') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
     </div>
 </div>

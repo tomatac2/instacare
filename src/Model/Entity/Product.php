@@ -63,5 +63,6 @@ class Product extends Entity
         'favorites' => true,
         'product_images' => true,
         'store' => true,
+        'show_on_home' => true,
     ];
 }

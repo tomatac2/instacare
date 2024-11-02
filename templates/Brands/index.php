@@ -4,43 +4,49 @@
  * @var iterable<\App\Model\Entity\Brand> $brands
  */
 ?>
-<div class="brands index content">
-    <?= $this->Html->link(__('New Brand'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Brands') ?></h3>
-    <div class="table-responsive">
-        <table>
+<div class="categories index content card basic-data-table">
+    <div class="card-header">  
+        <h3><?= __('العلامات التجارية') ?></h3>
+    </div> 
+    <div class="table-responsive card-body">
+        <table class="table bordered-table mb-0 dataTable">
             <thead>
                 <tr>
-                    <th><?= $this->Paginator->sort('id') ?></th>
-                    <th><?= $this->Paginator->sort('name') ?></th>
-                    <th><?= $this->Paginator->sort('photo') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
+                    <th><?= $this->Paginator->sort('الاسم') ?></th>
+                    <th><?= $this->Paginator->sort('الصورة') ?></th>
+                    <th class="actions"><?= __('الخصائص') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($brands as $brand): ?>
                 <tr>
-                    <td><?= $this->Number->format($brand->id) ?></td>
                     <td><?= h($brand->name) ?></td>
-                    <td><?= h($brand->photo) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $brand->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $brand->id]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $brand->id], ['confirm' => __('Are you sure you want to delete # {0}?', $brand->id)]) ?>
+                    <td><img src="<?= $this->Url->build('/').$brand->photo ?>" width="100" alt="" srcset=""></td>
+                    <td>
+                        <a href="<?=$this->Url->build('/').'brands/edit/'.$brand->id?>" class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center">
+                        <iconify-icon icon="lucide:edit"></iconify-icon>
+                        </a>
+
+                        <div class="w-32-px h-32-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center">
+                            
+                            <?= $this->Form->postLink('<iconify-icon icon="mingcute:delete-2-line"> </iconify-icon>',
+                                ['action' => 'delete', $brand->id],
+                                ['confirm' => __('سيتم حذف '.$brand["name"]) , 'escape' => false, ]) 
+                            ?>
+                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-    <div class="paginator">
+    <div class="paginator dt-paging paging_full_numbers">
         <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
+            <?= $this->Paginator->first('<< ' . __('أول')) ?>
+            <?= $this->Paginator->prev('< ' . __('سابق')) ?>
             <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
+            <?= $this->Paginator->next(__('تالي') . ' >') ?>
+            <?= $this->Paginator->last(__('أخير') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
     </div>
 </div>

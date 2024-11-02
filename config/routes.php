@@ -55,7 +55,23 @@ return function (RouteBuilder $routes): void {
          * its action called 'display', and we pass a param to select the view file
          * to use (in this case, templates/Pages/home.php)...
          */
-        $builder->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
+        $builder->connect('/', ['controller' => 'Products', 'action' => 'home']);
+        $builder->connect('/الرئيسية', ['controller' => 'Products', 'action' => 'home']);
+        $builder->connect('/عن-انستاكير', ['controller' => 'InstaCare', 'action' => 'aboutInsta']);
+        $builder->connect('/تواصل-معنا', ['controller' => 'InstaCare', 'action' => 'contactUs']);
+        $builder->connect('/سياسة-الخصوصية', ['controller' => 'InstaCare', 'action' => 'privacy']);
+        $builder->connect('/كيفية-الاستخدام', ['controller' => 'InstaCare', 'action' => 'howToUse']);
+        $builder->connect('/انضم-إلينا', ['controller' => 'JoinUs', 'action' => 'joinUs']);
+        $builder->connect('/product-details/{id}', ['controller' => 'Products', 'action' => 'details'])->setPass(['id']);
+
+
+
+        //dashboard 
+        $builder->connect('/dashboard', ['controller' => 'Products', 'action' => 'dashboard']);
+        //showonhome
+        $builder->connect('/prodcuts/show-on-home', ['controller' => 'Products', 'action' => 'showOnHome']);
+
+        
 
         /*
          * ...and connect the rest of 'Pages' controller's URLs.

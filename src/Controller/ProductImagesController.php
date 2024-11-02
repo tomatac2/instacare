@@ -67,6 +67,7 @@ class ProductImagesController extends AppController
      */
     public function edit($id = null)
     {
+        $this->viewBuilder()->setLayout("dashboard");
         $productImage = $this->ProductImages->get($id, contain: []);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $productImage = $this->ProductImages->patchEntity($productImage, $this->request->getData());
@@ -92,12 +93,14 @@ class ProductImagesController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $productImage = $this->ProductImages->get($id);
+
+        $productID = $productImage["product_id"]; 
         if ($this->ProductImages->delete($productImage)) {
             $this->Flash->success(__('The product image has been deleted.'));
         } else {
             $this->Flash->error(__('The product image could not be deleted. Please, try again.'));
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(['controller'=>'Products','action' => 'edit' , $productID]);
     }
 }

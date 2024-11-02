@@ -7,7 +7,7 @@ use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Psr\Http\Message\UploadedFileInterface;
 /**
  * Categories Model
  *
@@ -75,5 +75,55 @@ class CategoriesTable extends Table
             ->allowEmptyString('photo');
 
         return $validator;
+    }
+
+
+    public function validationAddCat(Validator $validator): Validator
+    {
+        $validator ->notEmptyString('name', 'ادخل اسم التصنيف')
+                   ->notEmptyString('photo', 'ادخل اسم الصورة') 
+                   ->add('image', [
+                    'mimeType' => [
+                        'rule' => ['mimeType', ['image/jpeg', 'image/png', 'image/gif']],
+                        'message' => __('الملف المرفوع يجب ان يكون صورة من نوع jpg , jpeg , png ')
+                    ],
+                       'fileSize' => [
+                           'rule' => ['fileSize', '<=', '5MB'],  // Max size 2MB
+                           'message' => 'حجم الملف اكبر من 5ميجا',
+                       ]
+                   ]);
+     
+
+        return $validator;
+    }
+    public function validationUpdateCat(Validator $validator): Validator
+    {
+        $validator ->notEmptyString('name', 'ادخل اسم التصنيف')
+                   ->notEmptyString('photo', 'ادخل اسم الصورة')     ;
+     
+
+        return $validator;
+    }
+
+
+
+    public function buildRules(RulesChecker $rules): RulesChecker
+    {
+        $rules->add($rules->isUnique(['name'],"التصنيف مسجل من قبل"), ['errorField' => 'name']);
+        return $rules;
+    }
+
+    ////
+
+    function getCatsAndSubCats4Header(){
+        $q = $this->find()
+                ->limit(10)
+                ->contain(['InnerCategories'])
+                ->distinct(['Categories.id'])
+                ->matching('InnerCategories')
+                ->toArray();
+
+
+        return $q ; 
     }
 }
