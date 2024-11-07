@@ -62,7 +62,12 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/سياسة-الخصوصية', ['controller' => 'InstaCare', 'action' => 'privacy']);
         $builder->connect('/كيفية-الاستخدام', ['controller' => 'InstaCare', 'action' => 'howToUse']);
         $builder->connect('/انضم-إلينا', ['controller' => 'JoinUs', 'action' => 'joinUs']);
+        $builder->connect('/المفضلة', ['controller' => 'Favorites', 'action' => 'favList']);
+        $builder->connect('/تسجيل-عضوية', ['controller' => 'Users', 'action' => 'register']);
+        $builder->connect('/استعادة-كلمة-المرور', ['controller' => 'Users', 'action' => 'recovery']);
+        $builder->connect('/change-password', ['controller' => 'Users', 'action' => 'changePassword']);
         $builder->connect('/product-details/{id}', ['controller' => 'Products', 'action' => 'details'])->setPass(['id']);
+        $builder->connect('/السلة', ['controller' => 'Cart', 'action' => 'cart']);
 
 
 

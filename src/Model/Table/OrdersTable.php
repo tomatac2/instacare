@@ -128,4 +128,24 @@ class OrdersTable extends Table
 
         return $rules;
     }
+
+    ////////////
+
+    function orderFields($obj){  //["req"=>$req , "items"=>$cart , "user_id"=>$userID , "session"]
+        $fields = [
+            "promo"=> $obj["req"]["promo"],
+            "full_address"=> $obj["req"]["full_address"],
+            "address_id"=>$obj["req"]["address_id"],
+            "items"=> $obj["items"] , 
+            "notes"=>$obj["req"]["notes"],
+            "user_id"=>$obj["userID"],
+        ] ; 
+
+        $fields["address_id"] ? $obj["session"]->write("extraCart.address_id",$fields["address_id"]): "";
+        $fields["full_address"] ? $obj["session"]->write("extraCart.full_address",$fields["full_address"]): "";
+        $fields["notes"] ? $obj["session"]->write("extraCart.notes",$fields["notes"]): "";
+        $fields["promo"] ? $obj["session"]->write("extraCart.promo",$fields["promo"]): "";
+
+        return $fields ; 
+    }
 }

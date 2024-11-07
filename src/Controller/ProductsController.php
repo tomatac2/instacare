@@ -21,7 +21,7 @@ class ProductsController extends AppController
             contain: ['ProductImages','Brands','Categories']
         );
 
-        dd($details);
+       // dd($details);
         $this->set(compact('details'));
 
     }

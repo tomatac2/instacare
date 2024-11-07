@@ -238,7 +238,7 @@ td , th ,tr { text-align: center !important;}
 
 
         
-          <a class=" text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3" href="javascript:void(0)"> 
+          <a class=" text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3" href="<?=URL.'users/logout'?>"> 
           <iconify-icon icon="lucide:power" class="icon text-xl"></iconify-icon>  تسجيل الخروج </a>
       
         </div><!-- Profile dropdown end -->

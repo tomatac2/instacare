@@ -53,5 +53,6 @@ class Address extends Entity
         'user' => true,
         'orders' => true,
         'prescription_orders' => true,
+        'full_address' => true,
     ];
 }

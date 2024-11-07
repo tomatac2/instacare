@@ -2,6 +2,8 @@
 declare(strict_types=1);
 
 namespace App\Controller;
+use Cake\Http\Exception\NotFoundException;
+use Cake\ORM\TableRegistry;
 
 /**
  * Cart Controller
@@ -10,6 +12,110 @@ namespace App\Controller;
  */
 class CartController extends AppController
 {
+
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->Authentication->addUnauthenticatedActions(['cart','addToCart','removeFromCart','plusMiuns','removeCart']);
+    }
+
+    function removeCart(){
+        $this->viewBuilder()->disableAutoLayout(false);
+        //delete cart session 
+        $session = $this->request->getSession();
+        $session->delete("Cart");  
+        
+        $this->set(compact('session'));
+    }
+
+    function plusMiuns(){
+        $this->viewBuilder()->disableAutoLayout(false);
+
+        $proID = $_GET["proID"];
+        $qun = $_GET["qun"];
+        //delete cart session 
+        $session = $this->request->getSession();
+        $session->write("Cart.$proID.quantity",$qun);  #custom product
+        
+
+      
+        $this->set(compact('session'));
+    }
+
+    function removeFromCart(){
+        $this->viewBuilder()->disableAutoLayout(false);
+
+        $proID = $_GET["proID"];
+        //delete cart session 
+        $session = $this->request->getSession();
+        $session->delete("Cart.$proID");  #custom product
+     
+        $this->set(compact('session'));
+    }
+
+    public function addToCart()
+    {
+        $this->viewBuilder()->disableAutoLayout(false);
+        $productId = $_GET["proID"];
+        $qun = $_GET["qun"];
+
+        $session = $this->request->getSession();
+
+        // Fetch existing cart data from the session
+        $cart = $session->read('Cart') ?? [];
+
+        // Find product (this assumes you have a Products model)
+        $product = $this->Cart->Products->get($productId);
+
+        // Update cart
+        if (isset($cart[$productId])) {
+            $cart[$productId]['quantity'] += $qun ? $qun : 1;
+        } else {
+            $cart[$productId] = [
+                'product_id' => $productId,
+                'name' => $product->name_ar,
+                'photo' => $product->photo,
+                'price' => $product->price,
+                'quantity' => $qun ? $qun : 1
+            ];
+        }
+
+        // Save updated cart to session
+        $session->write('Cart', $cart);
+
+
+        $this->set(compact('cart'));
+   
+    }
+
+
+    function cart(){
+        $this->viewBuilder()->setLayout('website');
+        //view cart session 
+       
+        $session = $this->request->getSession();
+
+        $cart = $session->read('Cart');
+        $extraCart = $session->read('extraCart');
+
+   
+        $userID = $this->Authentication->getIdentity()->id ;
+        
+        $userID ?  $addresses =   TableRegistry::getTableLocator()->get('Addresses')
+            ->find()
+            ->where(['user_id'=>$userID])
+            ->toArray() : "";
+       
+        if($this->request->is("post")){
+            $req = $this->request->getData();
+            $fields = $this->Cart->Orders->orderFields(["req"=>$req , "items"=>$cart , "user_id"=>$userID , "session"=>$session]);
+            // dd($extraCart);
+        }
+        $this->set(compact('cart','extraCart','addresses'));
+    }
+
+
+ 
     /**
      * Index method
      *

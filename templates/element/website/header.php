@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>INSTACARE</title>
+    <title>انستاكير</title>
     <meta name="robots" content="noindex, follow" />
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -20,11 +20,29 @@
     <link rel="stylesheet" href="<?= $this->Url->build('/') ?>assets/css/style.css">
     <!-- Responsive css -->
     <link rel="stylesheet" href="<?= $this->Url->build('/') ?>assets/css/responsive.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <style>
+        #select{
+            color: var(--ltn__paragraph-color) !important;
+            display: inline !important;
+            text-align: right !important;
+            border: 2px solid;
+            border-color: var(--border-color-1);
+            border-radius: 0;
+            font-size: 14px;
+            font-weight: 400;
+            height: 65px;
+            line-height: 60px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .list>li{
+            text-align: right !important;
+        }
         @font-face { font-family: zain; 
 			 src: url('<?= $this->Url->build('/') ?>assets/fonts/Zain-Regular.ttf'); } 
-             h1,h2,h3,h4,h5,h6,a,p,li,div,span,strong,input,select,.section-title ,button{
+             h1,h2,h3,h4,h5,h6,a,p,li,div,span,strong,input,select,.section-title ,button ,textarea, textarea::placeholder{
                     font-family: zain !important; 
                 }
 
@@ -60,6 +78,23 @@
     .section-title-area {
         margin-bottom: 10px !important;
     }
+    .message.error{
+        text-align: center;
+    background: #fa000024;
+    color: red;
+    padding: 10px;
+    }
+    .message.success{
+        text-align: center;
+        background: #4caf50;
+        color: #ffffff;
+    padding: 10px;
+    }
+
+    .error{
+        color: red; 
+    }
+ 
     </style>
 </head>
 
@@ -82,7 +117,7 @@
                 <div class="row">
                     <div class="col">
                         <div class="site-logo">
-                            <a href="#"><img src="<?= $this->Url->build('/') ?>assets/img/logo.png" alt="Logo" width="100px"></a>
+                            <a href="<?=URL?>"><img src="<?= $this->Url->build('/') ?>assets/img/logo.png" alt="Logo" width="100px"></a>
                         </div>
                     </div>
                     <div class="col">
@@ -94,9 +129,15 @@
                                     <!-- user-menu -->
                                     <div class="ltn__drop-menu user-menu">
                                         <ul>
+                                            <?php if($auth->role_id){ ?>
                                             <li>
-                                                <a href="#"><i class="icon-user"></i> تسجيل الدخول</a>
+                                                <a href="<?=URL.'users/profile'?>"><i class="icon-user"></i> الملف الشخصي</a>
                                             </li>
+                                            <?php }else{?>
+                                            <li>
+                                                <a href="<?=URL.'users/login'?>"><i class="icon-user"></i> تسجيل الدخول</a>
+                                            </li>
+                                            <?php }?>
                                         </ul>
                                     </div>
                                 </li>
@@ -147,7 +188,7 @@
                                             <li>
                                                      <!-- mini-cart 2 -->
                                                 <div class="mini-cart-icon mini-cart-icon-2">
-                                                    <a href="#" class="">
+                                                    <a href="<?=URL.'المفضلة'?>" class="">
                                                         <h6 style="margin-left: 10px;    display: block;"><span>المفضلة </span> </h6>
                                                         <span class="mini-cart-icon ">
                                                             <i class="flaticon-heart-1"></i>
@@ -161,11 +202,11 @@
                                 <li  style="margin: 0;">
                                     <!-- cart -->
                                     <div class="mini-cart-icon mini-cart-icon-2">
-                                        <a href="#" >
+                                        <a href="<?=URL.'السلة'?>" >
                                             <h6 style="margin-left: 10px;    display: block;"><span>السلة </span> </h6>
                                             <span class="mini-cart-icon">
                                                 <i class="icon-shopping-cart"></i>
-                                                <sup>2</sup>
+                                                <sup><?=$cartCount?></sup>
                                             </span>
                                         </a>
                                     </div>
@@ -222,7 +263,7 @@
         <div class="ltn__utilize-menu-inner ltn__scrollbar">
             <div class="ltn__utilize-menu-head">
                 <div class="site-logo">
-                    <a href="#"><img src="<?= $this->Url->build('/') ?>assets/img/logo.png" width="100" alt="Logo"></a>
+                    <a href="<?=URL?>"><img src="<?= $this->Url->build('/') ?>assets/img/logo.png" width="100" alt="Logo"></a>
                 </div>
                 <button class="ltn__utilize-close">×</button>
             </div>

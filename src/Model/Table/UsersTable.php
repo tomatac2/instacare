@@ -130,6 +130,35 @@ class UsersTable extends Table
 
         return $validator;
     }
+    //////////////////
+    public function validationAddUser(Validator $validator): Validator
+    {
+        $validator
+                 ->notEmptyString('name', 'ادخل الأسم')
+                 ->notEmptyString('email', 'ادخل البريد الإلكتروني')
+                 ->notEmptyString('mobile', 'ادخل رقم الموبيل')
+                 ->notEmptyString('role_id', 'اختر التصنيف')
+                 ->notEmptyString('password', 'ادخل كلمة المرور')  
+                 ->notEmptyString('confirm_password', 'ادخل تأكيد كلمة المرور')  
+                 ->add('confirm_password', [
+                    'mustMatch'=>[
+                        'rule'=>'checkForSamePassword',
+                        'provider'=>'table',
+                        'message'=>__('كلمة المرور غير متطابقة')
+                    ]
+                ])  ;
+    
+
+        return $validator;
+    }
+
+    public function checkForSamePassword($value, $context) {
+        if(!empty($value) && $value != $context['data']['password'] ) {
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * Returns a rules checker object that will be used for validating
@@ -140,9 +169,9 @@ class UsersTable extends Table
      */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
-        $rules->add($rules->isUnique(['email']), ['errorField' => 'email']);
-        $rules->add($rules->isUnique(['mobile']), ['errorField' => 'mobile']);
-        $rules->add($rules->existsIn(['role_id'], 'Roles'), ['errorField' => 'role_id']);
+        $rules->add($rules->isUnique(['email'],'البريد الإلكتروني مسجل'), ['errorField' => 'email']);
+        $rules->add($rules->isUnique(['mobile'],'رقم الهاتف مسجل'), ['errorField' => 'mobile']);
+        $rules->add($rules->existsIn(['role_id','نوع العضوية غير معروف'], 'Roles'), ['errorField' => 'role_id']);
 
         return $rules;
     }

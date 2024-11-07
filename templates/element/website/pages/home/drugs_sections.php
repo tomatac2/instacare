@@ -23,11 +23,18 @@
                         </div>
                         <br>
                         <h2 class="product-title"><?=$v["name_ar"]?></h2>
+                        </a>
                         <div class="product-price">
                             <span><?=$v["price"]?> جنيه</span>
                         </div>
-                        <button class="add-to-cart add_to_cart w-100 " style="background-color:#0a9a73;color:white">اضف للسلة</button>
-                        </a>
+                        <button class="add-to-cart add_to_cart w-100 addToCart"  style="background-color:#0a9a73;color:white">
+                            اضف للسلة
+                        <!---------hidden inputs --------->
+                        <input type="hidden" name="product_id" value="<?=$v["id"]?>">                        
+                        <input type="hidden" name="quantity" value="1">                        
+                        <input type="hidden" name="price" value="<?=$v["price"]?>">                        
+                        <!---------hidden inputs --------->                        
+                        </button>
                         </div>
                 </div>
                 <?php } ?>

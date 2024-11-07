@@ -134,3 +134,30 @@
         </div>
     </div>
     <!-- CALL TO ACTION END -->
+
+
+
+<script>
+    $(function(){
+        $(".addToCart").click(function(){
+            var proID = $(this).find("input[name='product_id']").val();
+            var qun = $(this).find("input[name='quantity']").val();
+            var price = $(this).find("input[name='price']").val();
+
+          //  $("#liton_wishlist_modal").css("display","block").css("opacity","1").css("background","#000000ab").css("z-index","99999");
+
+                $.ajax({
+                        url: '<?=$this->Url->build('/')?>cart/addToCart?proID='+proID ,//+'&qun='+qun+'&price='+price,
+                        type: 'GET',
+                        cache: false,
+                        headers: {
+                            'X-CSRF-Token': "<?=$this->request->getAttribute('csrfToken')?>" 
+                            },
+                        success: function(res){
+                            console.log($.parseJSON(res));
+                            
+                       }
+                });
+            })
+        })
+    </script>

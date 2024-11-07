@@ -45,15 +45,26 @@ class AppController extends Controller
 
         $this->loadComponent('Flash');
 
-       
+        $this->loadComponent('Authentication.Authentication');
+
         $getCatsAnsSubCats =  TableRegistry::getTableLocator()->get('Categories')->getCatsAndSubCats4Header();
        // dd($getCatsAnsSubCats);
+       $auth = $this->Authentication->getIdentity() ;
 
-        $this->set(compact('getCatsAnsSubCats'));
+       $cart = $this->request->getSession()->read('Cart');
+       $cart?$cartCount = count($cart):$cartCount=0;
+        $this->set(compact('getCatsAnsSubCats','auth','cartCount'));
         /*
          * Enable the following component for recommended CakePHP form protection settings.
          * see https://book.cakephp.org/5/en/controllers/components/form-protection.html
          */
         //$this->loadComponent('FormProtection');
+
+        $this->Authentication->addUnauthenticatedActions(['home', 'details','aboutInsta','contactUs','privacy','howToUse','joinUs']);
+
+
     }
 }
+
+
+ 

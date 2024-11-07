@@ -85,4 +85,35 @@ class FavoritesTable extends Table
 
         return $rules;
     }
+
+    //////////////
+
+    function addToFav($obj){
+        //check add before 
+        $chkB4 = $this->chkFavB4($obj);
+
+        $chkB4["success"]== true ? $newFav = $chkB4["data"] :  $newFav = $this->newEmptyEntity();
+       
+        $newFav = $this->patchEntity($newFav , $obj);
+        if($this->save($newFav)){
+            $res = ["success"=>true , "msg"=> "تم الاضافة الى المفضلة بنجاح" , "data"=>$newFav] ;
+        }else{
+            $res = ["success"=>false , "msg"=> "لم يتم الاضافة" , "data"=>json_decode("{}")] ;
+        }
+
+        return $res ; 
+    }
+
+    function chkFavB4($obj){
+        //check add before 
+        $chkB4 = $this->find()->where(['product_id'=>$obj["product_id"] , "user_id"=>$obj["user_id"]])->first();
+
+        if($chkB4){
+            $res = ["success"=>true, "data"=>$chkB4] ;
+        }else{
+            $res = ["success"=>false , "data"=>json_decode("{}")] ;
+        }
+
+        return $res ; 
+    }
 }

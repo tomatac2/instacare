@@ -10,6 +10,29 @@ namespace App\Controller;
  */
 class FavoritesController extends AppController
 {
+
+    function addToFav(){
+       $this->viewBuilder()->disableAutoLayout(false);
+       $proID = $_GET["proID"] ; 
+       $userID = $this->Authentication->getIdentity()->id ;
+
+       $addToFav = $this->Favorites->addToFav(["product_id"=>$proID , "user_id"=>$userID]);
+       $this->set(compact('addToFav'));
+    }
+
+    function favList(){
+        $this->viewBuilder()->setLayout("website");
+        $userID = $this->Authentication->getIdentity()->id ;
+        $query = $this->Favorites->find()
+            ->where(['Favorites.user_id'=>$userID])
+            ->contain([
+                'Products'=>function($q){return $q->select(['id','name_ar','photo','price']);},
+                'Users'
+            ]);
+        $favorites = $this->paginate($query);
+       // dd($favorites);
+       $this->set(compact('favorites'));
+    }
     /**
      * Index method
      *
@@ -20,7 +43,7 @@ class FavoritesController extends AppController
         $query = $this->Favorites->find()
             ->contain(['Products', 'Users']);
         $favorites = $this->paginate($query);
-
+        
         $this->set(compact('favorites'));
     }
 

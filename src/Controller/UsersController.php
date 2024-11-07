@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
+use Cake\Mailer\Mailer;
 
 /**
  * Users Controller
@@ -10,6 +11,133 @@ namespace App\Controller;
  */
 class UsersController extends AppController
 {
+
+
+    public function beforeFilter(\Cake\Event\EventInterface $event)
+{
+    parent::beforeFilter($event);
+    // Configure the login action to not require authentication, preventing
+    // the infinite redirect loop issue
+    $this->Authentication->addUnauthenticatedActions(['login','register','recovery','changePassword']);
+}
+
+
+function changePassword(){
+    $this->viewBuilder()->setLayout("website");
+
+    $newPass = $this->request->getData("password");
+    $token = $_GET["token"];
+    
+    if ($this->request->is('post')) {
+        //chk mail 
+        $chkEmailExist = $this->Users->find()->where(['recovery_hash_code'=>$token])->first();  //view
+     
+        if ( $chkEmailExist ) {
+           //change password 
+           $chkEmailExist->password = $newPass;
+           $updateCode = $this->Users->save($chkEmailExist);
+           $this->Flash->success(__('تم تغيير كلمة المرور بنجاح'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'login']); exit();
+        }else{
+            $this->Flash->error(__('الرابط غير صحيح'));
+        }
+    }
+ 
+    $this->set(compact('user'));
+
+}
+
+function recovery(){
+    $this->viewBuilder()->setLayout("website");
+
+    $email = $this->request->getData("email");
+    
+    if ($this->request->is('post')) {
+        //chk mail 
+        $chkEmailExist = $this->Users->find()->where(['email'=>$email])->first();  //view
+     
+        if ( $chkEmailExist ) {
+           //code update
+           $token =  md5($email).time();
+           $chkEmailExist->recovery_hash_code = $token;
+           $updateCode = $this->Users->save($chkEmailExist);
+           //send mail 
+           $url = '<a href="'.URL.'change-password?token='.$token.'">لاستعادة كلمة المرور اضغط على الرابط</a>';
+           $mailer = new Mailer('default');
+           $mailer->setTo('hatem.algawady@gmail.com')
+               ->setSubject('استعادة كلمة المرور فى انستاكير')
+               ->setEmailFormat('html')
+               ->deliver($url);
+        $this->Flash->success(__('لاستعادة كلمة المرور افحص بريدك الالكتروني'));
+        return $this->redirect(['controller' => 'Users', 'action' => 'login']); exit();
+
+        }else{
+            $this->Flash->error(__('البريد الإلكتروني غير صحيح'));
+        }
+    }
+ 
+    $this->set(compact('user'));
+
+}
+
+ 
+
+
+function register(){
+    $this->viewBuilder()->setLayout("website");
+    
+    $user = $this->Users->newEmptyEntity();
+    if ($this->request->is('post')) {
+        $user = $this->Users->patchEntity($user, $this->request->getData(),['validate'=>'addUser']);
+     
+        
+        // !$this->request->getData('gender') ? $user->gender = "ذكر" : "" ;
+     //   dd($user);
+        if ($this->Users->save($user)) {
+            $this->Flash->success(__('تم تسجيل العضوية بنجاح'));
+
+            return $this->redirect(['action' => 'login']);
+        }
+    }
+ 
+    $this->set(compact('user'));
+
+}
+
+// in src/Controller/UsersController.php
+public function logout()
+{
+    $result = $this->Authentication->getResult();
+    // regardless of POST or GET, redirect if user is logged in
+    if ($result && $result->isValid()) {
+        $this->Authentication->logout();
+
+        return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+    }
+}
+
+public function login()
+{
+    $this->viewBuilder()->setLayout("website");
+    $this->request->allowMethod(['get', 'post']);
+    $result = $this->Authentication->getResult();
+    // regardless of POST or GET, redirect if user is logged in
+    if ($result && $result->isValid()) {
+        // redirect to /articles after login success
+        $redirect = $this->request->getQuery('redirect', [
+            'controller' => 'Products',
+            'action' => 'home',
+        ]);
+
+        return $this->redirect($redirect);
+    }
+    // display error if user submitted and authentication failed
+    if ($this->request->is('post') && !$result->isValid()) {
+        $this->Flash->error(__('بيانات الدخول غير صحيحة'));
+    }
+    $this->set(compact('result'));
+}
+
     /**
      * Index method
      *
