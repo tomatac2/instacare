@@ -22,6 +22,40 @@ class UsersController extends AppController
 }
 
 
+    function getFlashMsg($res){
+        if($res["success"] == true){
+            $this->Flash->success(__($res["msg"]));
+        }else{
+            $err = $res["data"]->getErrors() ; 
+            if($err){
+                foreach($err as $errs){
+                    foreach($errs as $msg){
+                        $this->Flash->error(__($msg));
+                    }
+                }
+
+            }
+    }
+    }
+    function profile(){
+        $this->viewBuilder()->setLayout("website");
+        $userID = $this->Authentication->getIdentity()->id ;
+
+        if($this->request->is("post")){
+            $fromType = $this->request->getData("formType");
+            if($fromType =="updateProfile"){
+                $req = $this->request->getData(); 
+                $updateProfile = $this->Users->updateUser(["fields"=>$req , "user_id"=> $userID ]);
+                $returnFlash = $this->getFlashMsg($updateProfile) ;
+            } 
+          
+        }
+        
+        $bouns = $this->Users->Wallet->find()->where(['user_id'=>$userID])->first();
+        
+        $this->set(compact('bouns'));
+    }
+
 function changePassword(){
     $this->viewBuilder()->setLayout("website");
 
@@ -129,6 +163,8 @@ public function login()
             'action' => 'home',
         ]);
 
+        $_GET["cart"]==1 ? $redirect = URL.'السلة' : "";
+        
         return $this->redirect($redirect);
     }
     // display error if user submitted and authentication failed

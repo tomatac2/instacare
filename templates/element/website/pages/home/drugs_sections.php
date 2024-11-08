@@ -27,7 +27,7 @@
                         <div class="product-price">
                             <span><?=$v["price"]?> جنيه</span>
                         </div>
-                        <button class="add-to-cart add_to_cart w-100 addToCart"  style="background-color:#0a9a73;color:white">
+                        <button class="add-to-cart add_to_cart w-100 addToCart" id="cartBtn_<?=$v["id"]?>"  style="background-color:#0a9a73;color:white">
                             اضف للسلة
                         <!---------hidden inputs --------->
                         <input type="hidden" name="product_id" value="<?=$v["id"]?>">                        

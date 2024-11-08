@@ -1,3 +1,4 @@
+<?= $this->Flash->render() ?>
 <style>
     .nice-select{display: none;}
 </style>
@@ -23,7 +24,7 @@
     <!-- SHOPING CART AREA START -->
     <div class="liton__shoping-cart-area mb-120">
         <div class="container">
-            <form action="" method="POST">
+            <?= $this->Form->create($newOrder["data"]) ?>
                 <div class="row">
                     <div class="col-lg-8">
                         <div class="shoping-cart-inner">
@@ -93,7 +94,7 @@
                         <div class="cart-coupon" >
                             <div class="row">
                                 <div class="col-lg-8 col-md-8 col-10" style="    padding: 0 15px 0 0;">
-                                    <input type="text" name="promo" value="<?=$extraCart["promo"]?>" placeholder="ادخل كوبون الخصم هنا" style="max-width: 350px !important;">
+                                    <input type="text" name="promo" value="<?=$extraCart["promo"]?$extraCart["promo"]:""?>" placeholder="ادخل كوبون الخصم هنا" style="max-width: 350px !important;">
                                 </div>
                                 
                                 <div class="col-lg-4 col-md-4 col-2" style="    padding-left: 0;padding-right: 0;">
@@ -111,17 +112,17 @@
                                     <label for="">اختر عنوان التوصيل</label>
                                     <div class="col-md-12">
                                         <div>
-                                            <select name="address_id" id="select">
+                                            <select name="address_id" id="select" style="    margin-bottom: 5px;">
                                                 <option value="">اختر عنوان التوصيل</option>
                                                 <?php foreach($addresses as $val){?>
                                                     <option value="<?=$val["id"]?>" <?=$extraCart["address_id"] == $val["id"] ? "selected" : "" ?> ><?=$val["full_address"]?></option>
                                                 <?php }?>
                                             </select>
                                         </div>
-                                        <textarea name="full_address"  placeholder="أكتب العنوان بالتفصيل او اختر العنوان ...." name="" id="" style="min-height: 80px;"><?=$extraCart["full_address"]?></textarea>
+                                        <textarea name="full_address"  placeholder="أكتب العنوان بالتفصيل او اختر العنوان ...." name="" id="" style="min-height: 80px;"><?=$extraCart["full_address"]?$extraCart["full_address"]:""?></textarea>
                                     </div>
                                 <?php 
-                            else : echo '<textarea name="full_address" placeholder="أكتب العنوان بالتفصيل او اختر العنوان ...." name="" id="" style="min-height: 80px;">'.$extraCart["full_address"].'</textarea>';
+                            else : echo '<textarea name="full_address" placeholder="أكتب العنوان بالتفصيل او اختر العنوان ...." name="" id="" style="min-height: 80px;">'.$extraCart["full_address"]?$extraCart["full_address"]:"".'</textarea>';
                             endif; ?>
 
                                             
@@ -131,7 +132,7 @@
                         
                         <div class="container pb-15">
                             <h4> ملاحظات  </h4>
-                        <textarea placeholder="أضف أي ملاحظات هنا  ...." name="notes" id="" style="min-height: 80px;"><?=$extraCart["notes"]?></textarea>
+                        <textarea placeholder="أضف أي ملاحظات هنا  ...." name="notes" id="" style="min-height: 80px;"><?=$extraCart["notes"]?$extraCart["notes"]:""?></textarea>
                         </div>
 
                         <div class="shoping-cart-total">
@@ -142,7 +143,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            <?= $this->Form->end() ?>
         </div>
     </div>
     <!-- SHOPING CART AREA END -->
@@ -212,3 +213,61 @@
         })
     
     </script>
+
+
+
+
+<?php if($newOrder["success"]==true): ?>
+
+    <style>
+       #order_done {
+            display: block;
+    padding-left: 0px;
+    background: #000000cc;
+    z-index: 999999999999999;
+        }
+        .closeBtn{
+            text-align: center;
+        background: red;
+        color: white;
+        border-radius: 25%;
+        }
+        .closeBtn>span{
+            font-size: 40px !important;
+            padding-top: 3px  !important;color: white !important;
+        }
+        .closeBtn>span:hover{
+            color: white !important;
+        }
+    </style>
+    <div class="ltn__modal-area ltn__add-to-cart-modal-area">
+        <div class="modal fade show" id="order_done" tabindex="-1" aria-modal="true" role="dialog" style="display: block; padding-left: 0px;">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a href="<?=URL?>" type="button" class="close closeBtn" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </a>
+                    </div>
+                    <div class="modal-body">
+                         <div class="ltn__quick-view-modal-inner">
+                             <div class="modal-product-item">
+                                <div class="row">
+                                    <div class="col-12">
+                                         <div class="modal-product-info" style="    text-align: center; padding: 40px;">
+                                            <p class="added-cart" style="    font-size: 24px;"><i class="fa fa-check-circle"></i> تم تأكيد طلبك بنجاح سيتم تأكيده ويصلك فى خلال ساعة - ساعتين</p>
+                                            <div class="btn-wrapper">
+                                                <a href="<?=URL?>" class="theme-btn-1 btn btn-effect-1">الذهاب الى الرئيسية</a>
+                                            </div>
+                                         </div>
+                                    </div>
+                                </div>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php endif;?>

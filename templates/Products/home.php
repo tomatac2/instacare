@@ -140,9 +140,14 @@
 <script>
     $(function(){
         $(".addToCart").click(function(){
+
+           
+           
+
             var proID = $(this).find("input[name='product_id']").val();
-            var qun = $(this).find("input[name='quantity']").val();
-            var price = $(this).find("input[name='price']").val();
+            var thisBtn = $("#cartBtn_"+proID).text("تمت الإضافة للسلة").css("background","silver").prop("disabled",true);
+           // var qun = $(this).find("input[name='quantity']").val();
+            //var price = $(this).find("input[name='price']").val();
 
           //  $("#liton_wishlist_modal").css("display","block").css("opacity","1").css("background","#000000ab").css("z-index","99999");
 
@@ -154,7 +159,10 @@
                             'X-CSRF-Token': "<?=$this->request->getAttribute('csrfToken')?>" 
                             },
                         success: function(res){
-                            console.log($.parseJSON(res));
+                          var cartCount =  $("sup").text();
+                          $("sup").text(cartCount ++ +1);
+                
+                          //  console.log($.parseJSON(res));
                             
                        }
                 });

@@ -24,7 +24,7 @@ class CartController extends AppController
         //delete cart session 
         $session = $this->request->getSession();
         $session->delete("Cart");  
-        
+        $session->delete("extraCart");  
         $this->set(compact('session'));
     }
 
@@ -109,9 +109,25 @@ class CartController extends AppController
         if($this->request->is("post")){
             $req = $this->request->getData();
             $fields = $this->Cart->Orders->orderFields(["req"=>$req , "items"=>$cart , "user_id"=>$userID , "session"=>$session]);
-            // dd($extraCart);
+           
+            if(!$userID) return $this->redirect(URL.'users/login?cart=1');  
+
+            //create new address
+            $fields["full_address"] && !$fields["address_id"]? $fields["address_id"] = $this->Cart->Orders->Addresses->newAddress(["full_address"=>$fields["full_address"] , "user_id"=>$fields["user_id"] ]) : ""; 
+          
+            //create new order 
+            $newOrder = $this->Cart->Orders->newOrder(["fields"=>$fields , "session"=>$session]);
+            $err = $newOrder["data"]->getErrors() ; 
+            if($err){
+                foreach($err as $errs){
+                foreach($errs as $msg){
+                    $this->Flash->error(__($msg));
+                }
+                }
+                return $this->redirect(['controller' => 'Cart', 'action' => 'cart']); exit();
+            }
         }
-        $this->set(compact('cart','extraCart','addresses'));
+        $this->set(compact('cart','extraCart','addresses','newOrder'));
     }
 
 

@@ -49,9 +49,10 @@ class OrdersTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Cart', [
-            'foreignKey' => 'cart_id',
+        $this->hasMany('Cart', [
+            'foreignKey' => 'order_id',
         ]);
+
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
         ]);
@@ -66,49 +67,24 @@ class OrdersTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator): Validator
+    public function validationNewOrder(Validator $validator): Validator
     {
-        $validator
-            ->integer('cart_id')
-            ->allowEmptyString('cart_id');
-
-        $validator
-            ->integer('user_id')
-            ->allowEmptyString('user_id');
 
         $validator
             ->integer('address_id')
-            ->allowEmptyString('address_id');
+            ->notEmptyString('address_id','العنوان مطلوب تفصيلاً');
 
-        $validator
-            ->integer('amount')
-            ->allowEmptyString('amount');
 
-        $validator
-            ->integer('delivery_cost')
-            ->allowEmptyString('delivery_cost');
-
-        $validator
-            ->integer('delivery_duration')
-            ->allowEmptyString('delivery_duration');
-
-        $validator
-            ->integer('total_amount')
-            ->allowEmptyString('total_amount');
-
-        $validator
-            ->scalar('status')
-            ->allowEmptyString('status');
-
-        $validator
-            ->scalar('reject_reason')
-            ->maxLength('reject_reason', 255)
-            ->allowEmptyString('reject_reason');
-
-        $validator
-            ->scalar('notes')
-            ->maxLength('notes', 255)
-            ->allowEmptyString('notes');
+            $validator
+            ->add('items_amount', 'custom', [
+                'rule' => function ($value, $context) { 
+                    if($value >= 400){
+                        return true ; 
+                    }else{
+                        return "قيمة الطلب يجب ان تكون اكبر من 400جنيه";
+                    }
+                },
+            ]);
 
         return $validator;
     }
@@ -122,9 +98,9 @@ class OrdersTable extends Table
      */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
-        $rules->add($rules->existsIn(['cart_id'], 'Cart'), ['errorField' => 'cart_id']);
-        $rules->add($rules->existsIn(['user_id'], 'Users'), ['errorField' => 'user_id']);
-        $rules->add($rules->existsIn(['address_id'], 'Addresses'), ['errorField' => 'address_id']);
+        $rules->add($rules->existsIn('cart_id', 'Cart',"تم حذف منتجات السلة"), ['errorField' => 'cart_id']);
+        $rules->add($rules->existsIn('user_id' ,'Users' , "لابد من تسجيل الدخول اولاً"), ['errorField' => 'user_id']);
+        $rules->add($rules->existsIn('address_id','Addresses',"العنوان غير صحيح"), ['errorField' => 'address_id']);
 
         return $rules;
     }
@@ -138,7 +114,7 @@ class OrdersTable extends Table
             "address_id"=>$obj["req"]["address_id"],
             "items"=> $obj["items"] , 
             "notes"=>$obj["req"]["notes"],
-            "user_id"=>$obj["userID"],
+            "user_id"=>$obj["user_id"],
         ] ; 
 
         $fields["address_id"] ? $obj["session"]->write("extraCart.address_id",$fields["address_id"]): "";
@@ -148,4 +124,63 @@ class OrdersTable extends Table
 
         return $fields ; 
     }
+    //////////
+    function extraOrderInfo ($items){
+        foreach($items as $k=>$v){
+            $amount[] = $v["quantity"] * $v["price"] ;
+        }
+
+        $delivery_cost = 15 ;
+        $discount = 0 ;
+        $amount? $amountItems= array_sum($amount) : $amountItems=0  ;
+      
+        $totalAmount = $amountItems + $delivery_cost - $discount ; 
+        return [
+            "items_amount"=> $amountItems, 
+            "discount"=> $discount, 
+            "delivery_cost"=> $delivery_cost, 
+            "total_amount"=> $totalAmount , 
+            "delivery_duration"=> "من ساعة الى ساعتين", 
+        ] ;
+    }
+    ///
+    function newOrder($obj){  //promo , full_address , address_id , items , notes , user_id
+        $new = $this->newEmptyEntity();
+        //get extra-orders 
+        $getExtraInfo = $this->extraOrderInfo($obj["fields"]["items"]);
+        $obj["fields"]["items_amount"]  = $getExtraInfo["items_amount"];
+        
+        
+        $new = $this->patchEntity($new , $obj["fields"] , ['validate'=>'newOrder'] );
+     
+
+        $new->discount = $getExtraInfo["discount"];
+        $new->delivery_cost = $getExtraInfo["delivery_cost"];
+        $new->delivery_duration = $getExtraInfo["delivery_duration"];
+        $new->total_amount = $getExtraInfo["total_amount"];
+        $new->items_amount >= 400 ? $new->items_amount = $getExtraInfo["items_amount"] : "";
+     
+        if($this->save($new)){
+            //save items 
+            foreach($obj["fields"]["items"] as $k=>$v){
+                $items = $this->Cart->newEmptyEntity();
+                $items->user_id = $obj["fields"]["user_id"];
+                $items->product_id = $v["product_id"];
+                $items->quantity = $v["quantity"];
+                $items->order_id = $new->id ; 
+                $this->Cart->save($items);
+            }
+           $res = ["success"=>true ,"data"=>$new,  "msg"=>"تم اضافة الطلب بنجاح"]; 
+
+           //delete session 
+            $obj["session"]->delete('Cart');
+            $obj["session"]->delete('extraCart');
+       
+        }else{
+            $res = ["success"=>false ,"data"=>$new, "msg"=>"لم يتم اضافة الطلب"]; 
+        }
+
+     return $res ; 
+    }
+    /////////
 }

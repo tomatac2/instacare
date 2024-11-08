@@ -223,7 +223,7 @@
     
     <!-- MODAL AREA START (Add To Cart Modal) -->
     <div class="ltn__modal-area ltn__add-to-cart-modal-area">
-        <div class="modal fade" id="add_to_cart_modal" tabindex="-1">
+        <div class="modal fade" id="add_to_cart_modal" tabindex="-1" style="z-index: 9999999999999;">
             <div class="modal-dialog modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

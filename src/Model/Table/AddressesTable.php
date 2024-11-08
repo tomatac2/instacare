@@ -130,4 +130,22 @@ class AddressesTable extends Table
 
         return $rules;
     }
+
+    ////
+    function newAddress($fields){
+       
+        //chk old address by full_address 
+        $chkOldAdd = $this->find()->where(['user_id'=>$fields["user_id"],"full_address"=>$fields["full_address"]])->first();
+       
+        if(!$chkOldAdd):
+            $new = $this->newEmptyEntity();
+            $new = $this->patchEntity($new , $fields );
+            $this->save($new);
+            $address_id = $new->id ; 
+
+            else :  $address_id = $chkOldAdd->id ; 
+        endif; 
+        return $address_id ; 
+    }
+    
 }

@@ -55,8 +55,8 @@ class CartTable extends Table
         $this->belongsTo('Products', [
             'foreignKey' => 'product_id',
         ]);
-        $this->hasMany('Orders', [
-            'foreignKey' => 'cart_id',
+        $this->belongsTo('Orders', [
+            'foreignKey' => 'order_id',
         ]);
     }
 

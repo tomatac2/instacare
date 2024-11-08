@@ -36,7 +36,7 @@ class Cart extends Entity
         'user_id' => true,
         'product_id' => true,
         'quantity' => true,
-        'order_temp_id' => true,
+        'order_id' => true,
         'is_ordered' => true,
         'created' => true,
         'modified' => true,

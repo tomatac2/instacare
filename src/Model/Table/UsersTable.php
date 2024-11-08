@@ -151,6 +151,16 @@ class UsersTable extends Table
 
         return $validator;
     }
+    public function validationEditUser(Validator $validator): Validator
+    {
+        $validator
+                 ->notEmptyString('name', 'ادخل الأسم')
+                 ->notEmptyString('email', 'ادخل البريد الإلكتروني')
+                 ->notEmptyString('mobile', 'ادخل رقم الموبيل')     ;
+    
+
+        return $validator;
+    }
 
     public function checkForSamePassword($value, $context) {
         if(!empty($value) && $value != $context['data']['password'] ) {
@@ -160,6 +170,16 @@ class UsersTable extends Table
     }
 
 
+
+    function updateUser($obj){   //fields , user_id
+        $update = $this->get($obj["user_id"]);
+
+        $update = $this->patchEntity($update , $obj["fields"] , ["validate"=>'editUser']) ; 
+        $this->save($update) ? $res = ["success"=>true , "msg"=>"تم تحديث الملف الشخصي بنجاح" , "data"=>$update] 
+                            : $res = ["success"=>false , "msg"=>"لم يتم تحديث الملف الشخصي" , "data"=>$update]  ; 
+
+        return $res ; 
+    }
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
