@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="<?= $this->Url->build('/') ?>dashboard/assets/css/lib/audioplayer.css">
   <!-- main css -->
   <link rel="stylesheet" href="<?= $this->Url->build('/') ?>dashboard/assets/css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <style>
         @font-face { font-family: zain; 
@@ -50,6 +51,23 @@
 
 td , th ,tr { text-align: center !important;}
 
+.notes{
+  width: 90%;
+  background: #ddd;
+    color: black;
+    padding: 5px;
+    text-align: center;
+    font-size: 16px;
+    border: 1px solid black;
+}
+.tableClass{
+  border: 1px solid;width: 90%;
+}
+.tableClass>tbody>tr,.tableClass>tbody>tr>td,.tableClass>tbody>tr>th {
+  border: 1px solid;
+}
+
+
   </style>
 </head>
   <body>
@@ -58,7 +76,7 @@ td , th ,tr { text-align: center !important;}
     <iconify-icon icon="radix-icons:cross-2"></iconify-icon>
   </button>
   <div>
-    <a href="index.html" class="sidebar-logo">
+    <a href="<?=URL?>" class="sidebar-logo">
       <img src="<?= $this->Url->build('/') ?>assets/img/logo.png" alt="site logo" class="light-logo">
       <img src="<?= $this->Url->build('/') ?>assets/img/logo-icon.png" alt="site logo" class="logo-icon">
     </a>
@@ -67,7 +85,7 @@ td , th ,tr { text-align: center !important;}
     <ul class="sidebar-menu" id="sidebar-menu">
       <li class="dropdown">
         <a href="javascript:void(0)">
-          <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+        <iconify-icon icon="carbon:collapse-categories" class="menu-icon"></iconify-icon>
           <span>التصنيفات الرئيسية</span>
         </a>
         <ul class="sidebar-submenu">
@@ -82,7 +100,7 @@ td , th ,tr { text-align: center !important;}
       <!----------sub cats----------->
       <li class="dropdown">
         <a href="javascript:void(0)">
-          <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+        <iconify-icon icon="carbon:expand-categories" class="menu-icon"></iconify-icon>
           <span>التصنيفات الفرعية</span>
         </a>
         <ul class="sidebar-submenu">
@@ -96,10 +114,26 @@ td , th ,tr { text-align: center !important;}
       </li>
     <!---------end sub cats --------->
 
+    <!---------slider-------->
+    <li class="dropdown">
+        <a href="javascript:void(0)">
+        <iconify-icon icon="lineicons:photos"  class="menu-icon"></iconify-icon>
+        <span> سيلدير الرئيسية</span>
+        </a>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="<?= $this->Url->build('/') ?>sliders"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i> قائمة كل السيلدير</a>
+          </li>
+          <li>
+            <a href="<?= $this->Url->build('/') ?>sliders/add"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> اضافة سيلدير </a>
+          </li>
+        </ul>
+      </li>
+    <!---------end slider-------->
     <!--------- brands --------->
     <li class="dropdown">
         <a href="javascript:void(0)">
-          <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+          <iconify-icon icon="tabler:brand-denodo" class="menu-icon"></iconify-icon>
           <span> العلامات التجارية</span>
         </a>
         <ul class="sidebar-submenu">
@@ -115,7 +149,7 @@ td , th ,tr { text-align: center !important;}
     <!--------- products --------->
     <li class="dropdown">
         <a href="javascript:void(0)">
-          <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+          <iconify-icon icon="mdi:drugs" class="menu-icon"></iconify-icon>
           <span> المنتجات </span>
         </a>
         <ul class="sidebar-submenu">
@@ -128,6 +162,68 @@ td , th ,tr { text-align: center !important;}
         </ul>
       </li>
     <!---------end products --------->
+    <!--------- orders --------->
+    <li class="dropdown">
+        <a href="javascript:void(0)">
+        <iconify-icon icon="lsicon:work-order-info-filled" class="menu-icon"></iconify-icon>
+          <span> الطلبات </span>
+        </a>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="<?= $this->Url->build('/') ?>الطلبات-الحالية"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i> الطلبات الحالية  </a>
+          </li>
+          <li>
+            <a href="<?= $this->Url->build('/') ?>الطلبات-السابقة"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> الطلبات السابقة </a>
+          </li>
+        </ul>
+      </li>
+    <!---------end products --------->
+    <!--------- join us  --------->
+    <li class="dropdown">
+        <a href="javascript:void(0)">
+        <iconify-icon icon="mdi:papers-outline"  class="menu-icon"></iconify-icon>
+          <span> طلبات انضمام صيدليات </span>
+        </a>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="<?= $this->Url->build('/') ?>طلبات-الانضمام"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>  طلبات-الانضمام  </a>
+          </li>
+        </ul>
+      </li>
+    <!---------end products --------->
+
+    <!--------- store   --------->
+    <li class="dropdown">
+        <a href="javascript:void(0)">
+        <iconify-icon icon="mdi:store-plus" class="menu-icon"></iconify-icon>
+          <span> مخزن المنتجات   </span>
+        </a>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="<?= $this->Url->build('/') ?>store"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>  المخزن  </a>
+          </li>
+          <li>
+            <a href="<?= $this->Url->build('/') ?>store/add"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>  إضافة مخزون جديد  </a>
+          </li>
+        </ul>
+      </li>
+    <!---------end store --------->
+    <!--------- store   --------->
+    <li class="dropdown">
+        <a href="javascript:void(0)">
+        <iconify-icon icon="typcn:gift" class="menu-icon"></iconify-icon>
+          <span>  هدايا النقاط   </span>
+        </a>
+        <ul class="sidebar-submenu">
+          <li>
+            <a href="<?= $this->Url->build('/') ?>gifts"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>  منتجات الهدايا  </a>
+          </li>
+          <li>
+            <a href="<?= $this->Url->build('/') ?>gifts/add"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>  إضافة منتج هديه جديد  </a>
+          </li>
+        </ul>
+      </li>
+    <!---------end store --------->
     </ul>
   </div>
 </aside>
@@ -150,92 +246,7 @@ td , th ,tr { text-align: center !important;}
     <div class="col-auto">
       <div class="d-flex flex-wrap align-items-center gap-3">
  
-        <div class="dropdown">
-          <button class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center" type="button" data-bs-toggle="dropdown">
-            <iconify-icon icon="iconoir:bell" class="text-primary-light text-xl"></iconify-icon>
-          </button>
-          <div class="dropdown-menu to-top dropdown-menu-lg p-0">
-            <div class="m-16 py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
-              <div>
-                <h6 class="text-lg text-primary-light fw-semibold mb-0">Notifications</h6>
-              </div>
-              <span class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">05</span>
-            </div>
-            
-           <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
-            <a href="javascript:void(0)" class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
-              <div class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"> 
-                <span class="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
-                  <iconify-icon icon="bitcoin-icons:verify-outline" class="icon text-xxl"></iconify-icon>
-                </span> 
-                <div>
-                  <h6 class="text-md fw-semibold mb-4">Congratulations</h6>
-                  <p class="mb-0 text-sm text-secondary-light text-w-200-px">Your profile has been Verified. Your profile has been Verified</p>
-                </div>
-              </div>
-              <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
-            </a>
-            
-            <a href="javascript:void(0)" class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between bg-neutral-50">
-              <div class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"> 
-                <span class="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
-                  <img src="<?= $this->Url->build('/') ?>dashboard/assets/images/notification/profile-1.png" alt="">
-                </span> 
-                <div>
-                  <h6 class="text-md fw-semibold mb-4">Ronald Richards</h6>
-                  <p class="mb-0 text-sm text-secondary-light text-w-200-px">You can stitch between artboards</p>
-                </div>
-              </div>
-              <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
-            </a>
-            
-            <a href="javascript:void(0)" class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
-              <div class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"> 
-                <span class="w-44-px h-44-px bg-info-subtle text-info-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
-                  AM
-                </span> 
-                <div>
-                  <h6 class="text-md fw-semibold mb-4">Arlene McCoy</h6>
-                  <p class="mb-0 text-sm text-secondary-light text-w-200-px">Invite you to prototyping</p>
-                </div>
-              </div>
-              <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
-            </a>
-
-            <a href="javascript:void(0)" class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between bg-neutral-50">
-              <div class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"> 
-                <span class="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
-                  <img src="<?= $this->Url->build('/') ?>dashboard/assets/images/notification/profile-2.png" alt="">
-                </span> 
-                <div>
-                  <h6 class="text-md fw-semibold mb-4">Annette Black</h6>
-                  <p class="mb-0 text-sm text-secondary-light text-w-200-px">Invite you to prototyping</p>
-                </div>
-              </div>
-              <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
-            </a>
-
-            <a href="javascript:void(0)" class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
-              <div class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"> 
-                <span class="w-44-px h-44-px bg-info-subtle text-info-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
-                  DR
-                </span> 
-                <div>
-                  <h6 class="text-md fw-semibold mb-4">Darlene Robertson</h6>
-                  <p class="mb-0 text-sm text-secondary-light text-w-200-px">Invite you to prototyping</p>
-                </div>
-              </div>
-              <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
-            </a>
-           </div>
-
-            <div class="text-center py-12 px-16"> 
-                <a href="javascript:void(0)" class="text-primary-600 fw-semibold text-md">See All Notification</a>
-            </div>
-
-          </div>
-        </div><!-- Notification dropdown end -->
-
+        <?php // echo $this->element("dashboard/notifications"); ?>
 
         
           <a class=" text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3" href="<?=URL.'users/logout'?>"> 

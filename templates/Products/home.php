@@ -1,29 +1,15 @@
-    <!-- SLIDER AREA START (slider-3) -->
+<style>
+    .product-title{height: 50px;}
+</style>
+<?= $this->Flash->render() ?><!-- SLIDER AREA START (slider-3) -->
     <div class="ltn__slider-area ltn__slider-3---  section-bg-1--- mt-30">
         <div class="container">
             <div class="row">
                 <div class="col-lg-9">
-                    <div class="ltn__slide-active-2 slick-slide-arrow-1 slick-slide-dots-1 mb-30">
-                        <!-- ltn__slide-item -->
-                        <div class="ltn__slide-item ltn__slide-item-10 section-bg-1 bg-image" data-bs-bg="<?= $this->Url->build('/') ?>assets/img/drugs/dda0f242-0a51-4a9b-b0a6-c187344c41f9.jpeg" style="height: 330px;">
-                        </div>
-                        <!-- ltn__slide-item -->
-                        <div class="ltn__slide-item ltn__slide-item-10 section-bg-1 bg-image" data-bs-bg="<?= $this->Url->build('/') ?>assets/img/drugs/dda0f242-0a51-4a9b-b0a6-c187344c41f9.png" style="height: 330px;">
-                           
-                        </div>
-                    </div>
+                    <?=$this->element('website/pages/home/main_slider',['main'=>$slider5main2sub["main"]])?>
                 </div>
                 <div class="col-lg-3">
-                    <div class="ltn__banner-item">
-                        <div class="ltn__banner-img">
-                            <a href="#"><img style="height: 150px;width: 100%;" loading="lazy"  src="<?= $this->Url->build('/') ?>assets/img/drugs/a939279a-fe8a-4974-a52b-5b7efb6f2f98.jpeg" alt="Banner Image"></a>
-                        </div>
-                    </div>
-                    <div class="ltn__banner-item">
-                        <div class="ltn__banner-img">
-                            <a href="#"><img style="height: 150px;width: 100%;" loading="lazy"  src="<?= $this->Url->build('/') ?>assets/img/drugs/a939279a-fe8a-4974-a52b-5b7efb6f2f98.jpeg" alt="Banner Image"></a>
-                        </div>
-                    </div>
+                    <?=$this->element('website/pages/home/sub_slider',['sub'=>$slider5main2sub["sub"]])?>
                 </div>
             </div>
         </div>
@@ -31,13 +17,19 @@
     <!-- SLIDER AREA END -->
     
 
-    <div class="pt-10 section-bg-1- pb-20 ">
+    <div class="pt-10 section-bg-1- ">
         <p class="warring_note">جميع الأدوية يتم صرفها من صيدليات مرخصة من وزارة الصحة وبوجود وصفة طبية من طبيب مختص</p>
+    </div>
+
+    <div class="section-bg-1- " style="text-align: center;">
+        <a href="<?=URL?>إرسال-روشتة">
+            <img src="<?=URL?>img/prescription.png" alt="">
+        </a>
     </div>
 
     <!------------------->
          <!-- header-bottom-area start -->
-         <div class="header-bottom-area ltn__border-top---  menu-color-white---- d-none--- d-lg-block" >
+         <div class=" header-bottom-area ltn__border-top---  menu-color-white---- d-none--- d-lg-block" >
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
@@ -49,7 +41,7 @@
                                         <ul style="width: 100%;text-align: center;">
                                             <?php foreach($mainCats as $k=>$v){?>
                                                 <li>
-                                                    <a href="#">
+                                                    <a href="<?=URL.'products/search?cat='.$v["id"]?>">
                                                         <img src="<?= $this->Url->build('/').$v["photo"] ?>" width="40" height="50" loading="lazy" style="    display: inline-block;">
                                                         <br>
                                                         <?=$v["name"]?>
@@ -73,25 +65,25 @@
  
     <!-- PRODUCT AREA END -->
 
-    <?= $homeProducts ?  $this->element('website/pages/home/drugs_sections',["q"=>$homeProducts,"sectionName"=>" أدوية مهمة لكل بيت"]) : "" ?>
+    <?= $homeProducts ?  $this->element('website/pages/home/drugs_sections',["q"=>$homeProducts,"sectionName"=>" أدوية مهمة لكل بيت" ,"showHome"=>1]) : "" ?>
 
-    <?= $summerProducts ? $this->element('website/pages/home/drugs_sections',["q"=>$summerProducts,"sectionName"=>"جاهز للصيف؟"])  : "" ?>
+    <?= $summerProducts ? $this->element('website/pages/home/drugs_sections',["q"=>$summerProducts,"sectionName"=>"جاهز للصيف؟" ,"showHome"=>2])  : "" ?>
 
-    <?= $winterProducts ? $this->element('website/pages/home/drugs_sections',["q"=>$winterProducts,"sectionName"=>"جاهز للشتاء"])  : "" ?>
+    <?= $winterProducts ? $this->element('website/pages/home/drugs_sections',["q"=>$winterProducts,"sectionName"=>"جاهز للشتاء" ,"showHome"=>3])  : "" ?>
     
-    <?= $face ?  $this->element('website/pages/home/drugs_sections',["q"=>$face,"sectionName"=>"أفضل منتجات البشرة"])  : "" ?>
+    <?= $face ?  $this->element('website/pages/home/drugs_sections',["q"=>$face,"sectionName"=>"أفضل منتجات البشرة" ,"showHome"=>4])  : "" ?>
     
-    <?= $womenTools ?  $this->element('website/pages/home/drugs_sections',["q"=>$womenTools,"sectionName"=>"أفضل الفوط الصحية"])  : "" ?>
+    <?= $womenTools ?  $this->element('website/pages/home/drugs_sections',["q"=>$womenTools,"sectionName"=>"أفضل الفوط الصحية" ,"showHome"=>5])  : "" ?>
     
-    <?= $hair ?  $this->element('website/pages/home/drugs_sections',["q"=>$hair,"sectionName"=>"أفضل منتجات الشعر"])  : "" ?>
+    <?= $hair ?  $this->element('website/pages/home/drugs_sections',["q"=>$hair,"sectionName"=>"أفضل منتجات الشعر" ,"showHome"=>6])  : "" ?>
     
-    <?= $milk ?  $this->element('website/pages/home/drugs_sections',["q"=>$milk,"sectionName"=>" حليب الاطفال"])  : "" ?>
+    <?= $milk ?  $this->element('website/pages/home/drugs_sections',["q"=>$milk,"sectionName"=>" حليب الاطفال" ,"showHome"=>7])  : "" ?>
     
-    <?= $molifx ?  $this->element('website/pages/home/drugs_sections',["q"=>$molifx,"sectionName"=>" حفاضات الاطفال"])  : "" ?>
+    <?= $molifx ?  $this->element('website/pages/home/drugs_sections',["q"=>$molifx,"sectionName"=>" حفاضات الاطفال" ,"showHome"=>8])  : "" ?>
 
-    <?= $vitamins ?  $this->element('website/pages/home/drugs_sections',["q"=>$vitamins,"sectionName"=>" أفضل المكملات الغذائية"])  : "" ?>
+    <?= $vitamins ?  $this->element('website/pages/home/drugs_sections',["q"=>$vitamins,"sectionName"=>" أفضل المكملات الغذائية" ,"showHome"=>9])  : "" ?>
 
-    <?= $sex ?  $this->element('website/pages/home/drugs_sections',["q"=>$sex,"sectionName"=>" أفضل منتجات الصحة الجنسية"])  : "" ?>
+    <?= $sex ?  $this->element('website/pages/home/drugs_sections',["q"=>$sex,"sectionName"=>" أفضل منتجات الصحة الجنسية" ,"showHome"=>10])  : "" ?>
 
      
     <!---------brands-------->
@@ -137,6 +129,7 @@
 
 
 
+
 <script>
     $(function(){
         $(".addToCart").click(function(){
@@ -169,3 +162,28 @@
             })
         })
     </script>
+
+
+<script>
+    $(function(){
+  
+
+        // $("#slick-slide01").click();
+        // $("#slick-slide02").click();
+        var i = 0 ;
+        function timerFunction() {
+         
+        if(! $("#slick-slide0"+i).length) {
+            i = 0 ;
+        }
+        $("#slick-slide0"+i).click();
+      
+        i ++ ; 
+        }
+
+            // Set an interval to call timerFunction every 3 seconds
+            setInterval(timerFunction, 3000);
+    })
+</script>
+
+

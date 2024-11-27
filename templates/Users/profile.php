@@ -50,10 +50,10 @@
                                     <h3>مرحباً أحمد</h3>
                                     <div class="ltn__tab-menu-list mb-50">
                                         <div class="nav">
-                                            <a data-bs-toggle="tab"  href="#liton_tab_1_1"><i class="fas fa-file-alt"></i>الطلبات</a>
-                                            <a data-bs-toggle="tab" href="#liton_tab_1_2"> <i class="fas fa-map-marker-alt"></i>سجل العناوين</a>
-                                            <a data-bs-toggle="tab" href="#liton_tab_1_3"><i class="fas fa-user"></i>المحفظة</a>
-                                            <a class="active" data-bs-toggle="tab" href="#liton_tab_1_4"> <i class="fas fa-user"></i>الملف الشخصي</a>
+                                            <a data-bs-toggle="tab" class="tab"  href="#liton_tab_1_1"><i class="fas fa-file-alt"></i>الطلبات</a>
+                                            <a data-bs-toggle="tab" class="tab" href="#liton_tab_1_2"> <i class="fas fa-map-marker-alt"></i>سجل العناوين</a>
+                                            <a data-bs-toggle="tab" class="tab"href="#liton_tab_1_3"><i class="fas fa-user"></i>المحفظة</a>
+                                            <a class="active" class="tab" data-bs-toggle="tab" href="#liton_tab_1_4"> <i class="fas fa-user"></i>الملف الشخصي</a>
                                         </div>
                                     </div>
                                 </div>
@@ -86,3 +86,15 @@
     </div>
     <!-- WISHLIST AREA START -->
 
+
+<input type="hidden" id="tabID" value="<?=$_GET["tab"]?>">
+<script>
+    $(function(){
+        var tabID = $("#tabID").val();
+
+        if(tabID){
+            $('.tab')[tabID-1].click();
+        }
+   
+    })
+</script>

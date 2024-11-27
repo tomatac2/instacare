@@ -1,36 +1,45 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Store $store
- * @var string[]|\Cake\Collection\CollectionInterface $products
- */
-?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $store->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $store->id), 'class' => 'side-nav-item']
-            ) ?>
-            <?= $this->Html->link(__('List Store'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column column-80">
-        <div class="store form content">
-            <?= $this->Form->create($store) ?>
-            <fieldset>
-                <legend><?= __('Edit Store') ?></legend>
-                <?php
-                    echo $this->Form->control('product_id', ['options' => $products, 'empty' => true]);
-                    echo $this->Form->control('quantity');
-                    echo $this->Form->control('purchase_date', ['empty' => true]);
-                    echo $this->Form->control('notes');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
+<div class="card h-100 p-0 radius-12" style="background: none !important;box-shadow:none">
+    <div class="card-body p-24">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10">
+                <div class="card border">
+                    <div class="card-body">
+                        <?= $this->Form->create($store) ?>
+                        <fieldset>
+                            <legend><?= __(' تحديث مخزون المنتج') ?></legend>
+
+                            <div class="mb-20">
+                                <label for="product_id" class="form-label fw-semibold text-primary-light text-sm mb-8"> اسم المنتج <span class="text-danger-600">*</span></label>
+                                <?= $this->Form->control('product_id', ['options' => $products, 'label' => false, 'class' => 'form-select form-control radius-8',  "placeholder" => "ادخل الاسم", 'error' => ['class' => 'text-danger']]) ?>
+                            </div>
+
+                            <div class="mb-20">
+                                <label for="quantity" class="form-label fw-semibold text-primary-light text-sm mb-8"> الكمية   <span class="text-danger-600">*</span></label>
+                                <?= $this->Form->control('quantity', ['type' => 'number', 'label' => false, 'class' => 'form-control radius-8',  "placeholder" => "ادخل كمية المخزون", 'error' => ['class' => 'text-danger']]) ?>
+                            </div>
+
+                            <div class="mb-20">
+                                <label for="purchase_date" class="form-label fw-semibold text-primary-light text-sm mb-8"> تاريخ الشراء <span class="text-danger-600">*</span></label>
+                                <?= $this->Form->control('purchase_date', ['type' => 'date', 'label' => false, 'class' => 'form-control radius-8',  "placeholder" => "ادخل تاريخ الشراء", 'error' => ['class' => 'text-danger']]) ?>
+                            </div>
+
+                            <div class="mb-20">
+                                <label for="notes" class="form-label fw-semibold text-primary-light text-sm mb-8">   ملاحظات <span class="text-danger-600">*</span></label>
+                                <?= $this->Form->textarea('notes', ['type' => 'text', 'label' => false, 'class' => 'form-control radius-8',  "placeholder" => " ملاحظات ", 'error' => ['class' => 'text-danger']]) ?>
+                            </div>
+
+                        </fieldset>
+
+                        <div class="d-flex align-items-center justify-content-center gap-3">
+                            <button type="submit" style="width: 50%;" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
+                                حفظ
+                            </button>
+                        </div>
+
+                        <?= $this->Form->end() ?>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

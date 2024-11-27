@@ -13,16 +13,52 @@ use Cake\ORM\TableRegistry;
 class ProductsController extends AppController
 {
 
+    function search(){
+        $this->viewBuilder()->setLayout('website');
+
+        $name = $_GET["name"];
+        $cat = $_GET["cat"];
+        $subCat = $_GET["subCat"];
+        $showHome = $_GET["showHome"];
+        $showHomeTitle = $_GET["showHomeTitle"];
+
+        $getFilter =  $this->Products->searchByCatSubCatsName(["name"=>$name , "cat"=>$cat , "subCat"=>$subCat,"showHome"=>$showHome]) ;
+
+        $products = $this->paginate($getFilter);
+
+     
+      //  echo json_encode($products[0]["inner_category"]["name"]);
+      
+    $qyeryFirst = $products->toArray()[0] ; 
+    
+    is_numeric($cat) && !is_numeric($subCat)  ? $title =  $qyeryFirst["category"]["name"] : "";
+    is_numeric($subCat)  ? $title =  $qyeryFirst["inner_category"]["name"] : "";
+    !empty($name)  ? $title =  $qyeryFirst["category"]["name"] : "";
+    !empty($showHomeTitle)  ? $title =  $showHomeTitle : "";
+   
+    // echo $title ; exit; 
+    $this->set(compact('products','title'));
+
+    }
+
+
     function details($id){
         $this->viewBuilder()->setLayout('website');
 
+        $userID = $this->Authentication->getIdentity()->id ;
+        $userID ?$userID : $userID =  0 ; 
         $details = $this->Products->get(
             $id ,
-            contain: ['ProductImages','Brands','Categories']
+            contain: [
+                'ProductImages','Brands','Categories',
+                'Favorites'=>function($q) use ($userID){
+                    return $q ->where(['Favorites.user_id'=>$userID]);
+                }
+                ]
         );
 
-       // dd($details);
-        $this->set(compact('details'));
+       dd($details);
+        $this->set(compact('details','userID'));
 
     }
 
@@ -38,6 +74,9 @@ class ProductsController extends AppController
     function home(){
         $this->viewBuilder()->setLayout('website');
 
+        $slider5main2sub = TableRegistry::getTableLocator()->get('Sliders')->get5Main2Sub();
+
+        dd($slider5main2sub);
         $mainCats = $this->Products->Categories->find()->limit(10)->toArray();
         
         //get products by section (vipHome = 1)
@@ -57,7 +96,7 @@ class ProductsController extends AppController
 
         $brands = TableRegistry::getTableLocator()->get('Brands')->find()->limit(20)->toArray();
 
-        $this->set(compact('brands','mainCats','homeProducts','winterProducts','face','womenTools','hair','milk','molifx','vitamins','sex'));
+        $this->set(compact('slider5main2sub','brands','mainCats','homeProducts','winterProducts','face','womenTools','hair','milk','molifx','vitamins','sex'));
     }
     /**
      * Index method
@@ -128,8 +167,12 @@ class ProductsController extends AppController
             $product->inner_category_id  =  $req["sub_cat_id"]  ;
 
             if ($this->Products->save($product)) {
+                //add quntity on store 
+                $addToStore = $this->Products->Store->addToStore(["product_id"=>$product->id , "quantity"=>$req["quantity"] , "purchase_date"=> date("Y-m-d")]);
+                
                 //upload multi photo
                 $multiPhotos = $this->multiPhotos(["imgs"=>$req["images"] , "product_id"=>$product["id"]]);
+
 
                 $this->Flash->success(__('تم الحفظ بنجاح'));
 
@@ -184,8 +227,10 @@ class ProductsController extends AppController
         $req = $this->request->getData() ; 
        
         $product = $this->Products->get($id, contain: ['ProductImages']);
+        $oldQuantity = $product["quantity"];
+
         if ($this->request->is(['patch', 'post', 'put'])) {
-            dd($req);
+            
             $product = $this->Products->patchEntity($product,  $req , ["validate"=>"updateProduct"]);
 
             
@@ -200,6 +245,10 @@ class ProductsController extends AppController
             $product->inner_category_id  =  $req["sub_cat_id"]  ;
 
             if ($this->Products->save($product)) {
+
+                //add quntity on store 
+                $oldQuantity != $req["quantity"] = $this->Products->Store->updateQuantityProduct(["product_id"=>$product->id , "quantity"=>$req["quantity"],"type"=>"product"]);
+                
                 //upload multi photo
                 $multiPhotos = $this->multiPhotos(["imgs"=>$req["images"] , "product_id"=>$product["id"]]);
                 $this->Flash->success(__('The product has been saved.'));

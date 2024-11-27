@@ -13,10 +13,11 @@
                                 </div>
                             </div>
                             <p>
-                                اطلب كل احتاجيتاك من الصيدلية عن طريقة موقع انستاكير بسهولة 
-                                تقدر تطلب اوردر او روشتة على مستوي مدينة الاسكندرية كها
+
+نحن نهتم بك وبعائلتك
+من خلال موقع انستاكير يمكنك طلب جميع احتياجاتك واحتياجات عائلتك من الصيدلية في أي وقت وفي أي مكان ، كما يمكنك طلب الدعم من الصيادلة المتخصصين على مدار 24 ساعة في اليوم.
                             </p>
-                            <div class="footer-address">
+                            <!-- <div class="footer-address">
                                 <ul>
                                     <li>
                                         <div class="footer-address-icon">
@@ -27,15 +28,15 @@
                                         </div>
                                     </li>
                                 </ul>
-                            </div>
-                            <div class="ltn__social-media mt-20">
+                            </div> -->
+                            <!-- <div class="ltn__social-media mt-20">
                                 <ul>
                                     <li><a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
                                     <li><a href="#" title="Twitter"><i class="fab fa-twitter"></i></a></li>
                                     <li><a href="#" title="Linkedin"><i class="fab fa-linkedin"></i></a></li>
                                     <li><a href="#" title="Youtube"><i class="fab fa-youtube"></i></a></li>
                                 </ul>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6 col-sm-6 col-12">
@@ -43,9 +44,9 @@
                             <h4 class="footer-title">المزيد عنا</h4>
                             <div class="footer-menu">
                                 <ul>
-                                    <li><a href="#">عن انستاكير</a></li>
-                                    <li><a href="#">تواصل معنا</a></li>
-                                    <li><a href="#">هل تملك صيدلية ؟</a></li>
+                                    <li><a href="<?=URL.'عن-انستاكير'?>">عن انستاكير</a></li>
+                                    <li><a href="<?=URL.'تواصل-معنا'?>">تواصل معنا</a></li>
+                                    <li><a href="<?=URL. 'انضم-إلينا' ?>">هل تملك صيدلية ؟</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -55,8 +56,8 @@
                             <h4 class="footer-title">خدمتنا</h4>
                             <div class="footer-menu">
                                 <ul>
-                                    <li><a href="#">انستاكير اونلاين</a></li>
-                                    <li><a href="#">إرسال روشتة</a></li>
+                                    <li><a href="<?=URL.'products/search'?>">انستاكير اونلاين</a></li>
+                                    <li><a href="<?=URL.'إرسال-روشتة'?>">إرسال روشتة</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -75,14 +76,17 @@
                     <div class="col-md-6 col-12 align-self-center">
                         <div class="ltn__copyright-menu text-end">
                             <ul>
-                                <li><a href="#">الشروط والأحكام</a></li>
-                                <li><a href="#">سياسة الخصوصية</a></li>
+                                <li><a href="<?=URL.'كيفية-الاستخدام'?>">كيفية الاستخدام</a></li>
+                                <li><a href="<?=URL?>سياسة-الخصوصية">سياسة الخصوصية</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+            <!------GIFT POINTS----->
+    <?= $this->element('website/pages/home/gift_points') ?>
+    <!-----END GIFT POINTS------>
     </footer>
     <!-- FOOTER AREA END -->
 

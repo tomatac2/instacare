@@ -9,8 +9,8 @@
                     <div class="ltn__breadcrumb-inner">
                         <div class="ltn__breadcrumb-list">
                             <ul>
-                                <li><a href="#"><span class="ltn__secondary-color"><i class="fas fa-home"></i></span> الرئيسية</a></li>
-                                <li><a href="#"><span class="ltn__secondary-color"><i class="fas fa-list-alt"></i></span> <?=$details["category"]["name"]?></a></li>
+                                <li><a href="<?=URL?>"><span class="ltn__secondary-color"><i class="fas fa-home"></i></span> الرئيسية</a></li>
+                                <li><a href="<?=URL.'products/search?cat='.$details["category_id"]?>"><span class="ltn__secondary-color"><i class="fas fa-list-alt"></i></span> <?=$details["category"]["name"]?></a></li>
                                 <li><a> <?=$details["name_ar"]?></a></li>
                             </ul>
                         </div>
@@ -102,11 +102,23 @@
                                     <div class="ltn__product-details-menu-3">
                                         <ul>
                                             <li>
-                                                <a href="#" class="" title="Wishlist" id="addToFav" data-bs-toggle="modal" >
+                                                <?php if($userID == 0 ){ ?>
+                                                    <a href="<?= URL.'users/login?profile='.$details["id"] ?>" title="Wishlist"  >
                                                     <input type="hidden" id="proID" value="<?=$details["id"]?>">
-                                                    <i class="far fa-heart"></i>
+
+                                                    <?=  $details["favorites"] && count($details["favorites"])>0 ? '<i class="fa  fa-heart" style="color:red"></i>' : '<i class="far fa-heart"></i>' ?>
+                                                    
                                                     <span>أضف الى المفضلة</span>
                                                 </a>
+                                                <?php }else{ ?>
+                                                <a href="#" title="Wishlist" id="addToFav" data-bs-toggle="modal" >
+                                                    <input type="hidden" id="proID" value="<?=$details["id"]?>">
+
+                                                    <?=  $details["favorites"] && count($details["favorites"])>0 ? '<i class="fa  fa-heart" style="color:red"></i>' : '<i class="far fa-heart"></i>' ?>
+                                                    
+                                                    <span>أضف الى المفضلة</span>
+                                                </a>
+                                                <?php } ?>
                                             </li>
                                         </ul>
                                     </div>
@@ -319,4 +331,4 @@
                 });
             })
         })
-    </script>
+</script>

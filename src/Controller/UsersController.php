@@ -40,20 +40,41 @@ class UsersController extends AppController
     function profile(){
         $this->viewBuilder()->setLayout("website");
         $userID = $this->Authentication->getIdentity()->id ;
-
+     
         if($this->request->is("post")){
             $fromType = $this->request->getData("formType");
-            if($fromType =="updateProfile"){
-                $req = $this->request->getData(); 
-                $updateProfile = $this->Users->updateUser(["fields"=>$req , "user_id"=> $userID ]);
+            //$fromType = $this->request->getData();
+            $req = $this->request->getData(); 
+            if($req["password"]  || $req["cpassword"]  ){
+              
+                $fields = [
+                    "password"=> $req["password"] , 
+                    "cpassword"=> $req["cpassword"] 
+                ] ;
+                $changePass = $this->Users->changePasswordLogin(["fields"=>$fields , "user_id"=> $userID ]);
+                $returnFlash = $this->getFlashMsg($changePass) ;
+            } 
+            else if($fromType =="updateProfile"){
+                $fields = [
+                    "name"=> $req["name"] , 
+                    "email"=> $req["email"] , 
+                    "mobile"=> $req["mobile"] , 
+                    "gender"=> $req["gender"] , 
+                ] ;
+                $updateProfile = $this->Users->updateUser(["fields"=>$fields , "user_id"=> $userID ]);
                 $returnFlash = $this->getFlashMsg($updateProfile) ;
             } 
           
         }
         
         $bouns = $this->Users->Wallet->find()->where(['user_id'=>$userID])->first();
-        
-        $this->set(compact('bouns'));
+        $getProfile = $this->Users->getUser($userID);
+        $my_orders = $this->Users->Orders->getMyOrders($userID);
+        $my_addressess = $this->Users->Addresses->getMyAddresses($userID);
+       // dd($my_orders);
+
+ 
+        $this->set(compact('bouns','getProfile','my_orders','my_addressess'));
     }
 
 function changePassword(){
@@ -164,6 +185,10 @@ public function login()
         ]);
 
         $_GET["cart"]==1 ? $redirect = URL.'السلة' : "";
+
+        $_GET["prescription"]==1 ? $redirect = URL.'إرسال-روشتة' : "";
+
+        $_GET["profile"] ? $redirect = URL.'products/details/'.$_GET["profile"] : "";
         
         return $this->redirect($redirect);
     }

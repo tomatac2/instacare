@@ -17,6 +17,8 @@ class StoreController extends AppController
      */
     public function index()
     {
+        $this->viewBuilder()->setLayout("dashboard");
+
         $query = $this->Store->find()
             ->contain(['Products']);
         $store = $this->paginate($query);
@@ -44,15 +46,20 @@ class StoreController extends AppController
      */
     public function add()
     {
+        $this->viewBuilder()->setLayout("dashboard");
+
         $store = $this->Store->newEmptyEntity();
         if ($this->request->is('post')) {
             $store = $this->Store->patchEntity($store, $this->request->getData());
+            $store->type = "bill";
             if ($this->Store->save($store)) {
-                $this->Flash->success(__('The store has been saved.'));
+                $newQun = $store["quantity"];
+                //change product balance 
+                $this->Store->Products->updateQuantity(["product_id"=>$store["product_id"], "newQun"=>$newQun]);
 
+                $this->Flash->success(__('تم الاضافة بنجاح'));
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The store could not be saved. Please, try again.'));
         }
         $products = $this->Store->Products->find('list', limit: 200)->all();
         $this->set(compact('store', 'products'));
@@ -67,15 +74,22 @@ class StoreController extends AppController
      */
     public function edit($id = null)
     {
+        $this->viewBuilder()->setLayout("dashboard");
+
         $store = $this->Store->get($id, contain: []);
+        $b4UpdateQun = $store["quantity"];
         if ($this->request->is(['patch', 'post', 'put'])) {
             $store = $this->Store->patchEntity($store, $this->request->getData());
             if ($this->Store->save($store)) {
-                $this->Flash->success(__('The store has been saved.'));
+                $updateQun = $store["quantity"];
+                //change product balance 
+                $this->Store->Products->updateQuantity(["product_id"=>$store["product_id"], "newQun"=>$updateQun - $b4UpdateQun ]);
+                
+                
+                $this->Flash->success(__('تم التحديث بنجاح'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The store could not be saved. Please, try again.'));
         }
         $products = $this->Store->Products->find('list', limit: 200)->all();
         $this->set(compact('store', 'products'));

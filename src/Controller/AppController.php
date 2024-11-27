@@ -60,7 +60,10 @@ class AppController extends Controller
          */
         //$this->loadComponent('FormProtection');
 
-        $this->Authentication->addUnauthenticatedActions(['home', 'details','aboutInsta','contactUs','privacy','howToUse','joinUs']);
+        $this->Authentication->addUnauthenticatedActions([
+            'home','search', 'details','aboutInsta','contactUs', 'privacy','howToUse','joinUs','prescription',
+            'getGifts'
+        ]);
 
 
     }

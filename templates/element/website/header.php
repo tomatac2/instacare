@@ -95,6 +95,16 @@
         color: red; 
     }
  
+    .no_records{
+        text-align: center;
+    border: 1px solid #10ab81;
+    padding: 10px;
+    font-weight: 500;
+    color: #10ab81;
+    }
+    .cart-coupon input{
+        max-width: unset !important;
+    }
     </style>
 </head>
 
@@ -158,8 +168,8 @@
                 <div class="col-md-7">
                          <!-- header-search-2 -->
                          <div class="header-search-2">
-                            <form id="#123" method="get"  action="#">
-                                <input type="text" name="search" value="" style="box-shadow: none; border-radius: 7px; border: 1px solid #ddd;border-radius: 7px;" placeholder="ابحث فى المنتجات الآن .... "/>
+                            <form id="#123" method="get"  action="<?=URL.'products/search'?>">
+                                <input type="text" name="name" value="<?=$_GET["name"]?>" style="box-shadow: none; border-radius: 7px; border: 1px solid #ddd;border-radius: 7px;" placeholder="ابحث فى المنتجات الآن .... "/>
                                 <button type="submit">
                                     <span><i class="icon-search"></i></span>
                                 </button>
@@ -232,11 +242,11 @@
                                     <div class="ltn__main-menu">
                                         <ul style="width: 100%;text-align: center;">
                                             <?php foreach($getCatsAnsSubCats as $k=>$v){    ?>
-                                                <li><a href="#"><?=$v["name"]?></a>
+                                                <li><a href="<?= URL.'products/search?cat='.$v["id"] ?>"><?=$v["name"]?></a>
                                                 <ul class="sub-menu menu-pages-img-show ltn__sub-menu-col-2---">
                                                     <?php foreach($v["inner_categories"] as $subK => $subV){   ?>
                                                     <li>
-                                                        <a href="#"><?=$subV["name"]?></a>
+                                                        <a href="<?= URL.'products/search?subCat='.$subV["id"] ?>"><?=$subV["name"]?></a>
                                                     </li>
                                                     <?php    }     ?>
                                                 </ul>
@@ -270,17 +280,17 @@
             <div class="ltn__utilize-menu">
                 <ul>
                     <li>
-                        <a href="#">الرئيسية</a>
+                        <a href="<?=URL?>">الرئيسية</a>
                     </li>
-                    <li><a href="#">عن انستاكير</a>
+                    <li><a href="<?=URL?>عن-انستاكير">عن انستاكير</a>
                     </li>
-                    <li><a href="#">تواصل معنا</a></li>
+                    <li><a href="<?=URL?>تواصل-معنا">تواصل معنا</a></li>
                 </ul>
             </div>
             <div class="ltn__utilize-buttons ltn__utilize-buttons-2">
                 <ul>
                     <li>
-                        <a href="#" title="My Account">
+                        <a href="<?=URL.'users/login'?>" title="My Account">
                             <span class="utilize-btn-icon">
                                 <i class="far fa-user"></i>
                             </span>
@@ -288,7 +298,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" title="Wishlist">
+                        <a href="<?=URL.'المفضلة'?>" title="Wishlist">
                             <span class="utilize-btn-icon">
                                 <i class="far fa-heart"></i>
                             </span>
@@ -296,7 +306,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" title="Shoping Cart">
+                        <a href="<?=URL.'السلة'?>" title="Shoping Cart">
                             <span class="utilize-btn-icon">
                                 <i class="fas fa-shopping-cart"></i>
                             </span>
@@ -305,14 +315,14 @@
                     </li>
                 </ul>
             </div>
-            <div class="ltn__social-media-2">
+            <!-- <div class="ltn__social-media-2">
                 <ul>
                     <li><a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
                     <li><a href="#" title="Twitter"><i class="fab fa-twitter"></i></a></li>
                     <li><a href="#" title="Linkedin"><i class="fab fa-linkedin"></i></a></li>
                     <li><a href="#" title="Instagram"><i class="fab fa-instagram"></i></a></li>
                 </ul>
-            </div>
+            </div> -->
         </div>
     </div>
     <!-- Utilize Mobile Menu End -->
@@ -320,3 +330,4 @@
     <div class="ltn__utilize-overlay">    </div> 
 
 <!----------end header-->
+

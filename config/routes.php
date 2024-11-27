@@ -68,11 +68,18 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/change-password', ['controller' => 'Users', 'action' => 'changePassword']);
         $builder->connect('/product-details/{id}', ['controller' => 'Products', 'action' => 'details'])->setPass(['id']);
         $builder->connect('/السلة', ['controller' => 'Cart', 'action' => 'cart']);
+        $builder->connect('/إضافة-عنوان-جديد', ['controller' => 'Addresses', 'action' => 'add']);
+        $builder->connect('/إرسال-روشتة', ['controller' => 'orders', 'action' => 'prescription']);
 
+        //ajax 
+        $builder->connect('/get-gifts', ['controller' => 'Gifts', 'action' => 'getGifts']);
 
 
         //dashboard 
-        $builder->connect('/dashboard', ['controller' => 'Products', 'action' => 'dashboard']);
+        $builder->connect('/dashboard', ['controller' => 'Categories', 'action' => 'index']);
+        $builder->connect('/الطلبات-الحالية', ['controller' => 'Orders', 'action' => 'currentOrders']);
+        $builder->connect('/الطلبات-السابقة', ['controller' => 'Orders', 'action' => 'index']);
+        $builder->connect('/طلبات-الانضمام', ['controller' => 'JoinUs', 'action' => 'index']);
         //showonhome
         $builder->connect('/prodcuts/show-on-home', ['controller' => 'Products', 'action' => 'showOnHome']);
 

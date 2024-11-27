@@ -37,5 +37,21 @@ class Store extends Entity
         'created' => true,
         'modified' => true,
         'product' => true,
+        'type' => true,
     ];
+
+
+    protected array $_virtual = ['type_ar'];
+    
+    function _getTypeAr($type)
+    {
+        $type = $this->type ; 
+        $type?$type:$type="product" ; 
+        $typeArObj = [
+            "product"=>"<span style='color:blue'>صفحة المنتجات</span>",
+            "bill"=>"<span  style='color:blue'> صفحة مخزن المنتجات </span>",
+            "order"=>"<span style='color:red'> طلبات الموقع  </span>",
+        ] ;
+       return  $typeArObj[$type] ;
+    }
 }

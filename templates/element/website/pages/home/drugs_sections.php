@@ -40,7 +40,7 @@
                 <?php } ?>
             </div>
             <div class="col-sm-12">
-                <button class="add-to-cart add_to_cart w-100 " style="  border: 1px solid #0a9a73; background: white; border-radius: 3px;color:#0a9a73; width: 100px !important;float: left;" tabindex="0">عرض الكل > </button>
+                <a href="<?= URL.'products/search?showHome='.$showHome.'&showHomeTitle='.$sectionName?>" class="add-to-cart add_to_cart w-100 " style="  border: 1px solid #0a9a73; background: white; border-radius: 3px;color:#0a9a73; width: 100px !important;float: left;    text-align: center;" tabindex="0">عرض الكل > </a>
             </div>
 
             </div>

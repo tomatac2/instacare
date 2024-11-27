@@ -7,6 +7,8 @@ use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use App\Hellpers\UploadFile;
+use Cake\ORM\TableRegistry;
 
 /**
  * Orders Model
@@ -88,7 +90,66 @@ class OrdersTable extends Table
 
         return $validator;
     }
+    public function validationNewPrescription(Validator $validator): Validator
+    {
 
+        $validator
+            ->integer('address_id')
+            ->notEmptyString('address_id','العنوان مطلوب تفصيلاً');
+
+
+            $validator
+            ->add('prescription_file2', 'custom', [
+                'rule' => function ($value, $context) { 
+                    if($value && $_FILES["prescription_file2"]["name"]){
+                     
+                        $uploadFile = $this->chkFile(["photoName"=>"prescription_file2" , "path"=>"library/prescriptions" ]) ;
+                     
+                        if($uploadFile["success"]== false){
+                            return $uploadFile["msg"];
+                        }else{
+                            $context["data"]["prescription_file_entity"]  = $uploadFile["name"];
+                           // dd($context);
+                        }
+                        return true ; 
+                    }else{
+                       
+                        if(!empty($context["data"]["notes"])){
+                            return true ;
+                        }
+                          
+                        return "برجاء رفع صورة او كتابة وصف الطلب بالتفصيل";
+                    }
+                },
+            ]);
+
+        return $validator;
+    }
+
+    //////////////////
+
+    function chkFile($photoParamD){
+        if($_SERVER['REQUEST_METHOD'] == 'POST' && $_FILES[$photoParamD['photoName']]['name'] != null):
+            $fileName    = $_FILES[$photoParamD['photoName']]['name'] ;
+            $fileSize    = $_FILES[$photoParamD['photoName']]['size'] ;
+            $fileTmpName = $_FILES[$photoParamD['photoName']]['tmp_name'] ;
+            $fileType    = $_FILES[$photoParamD['photoName']]['type'] ;
+            // Allowed Extention
+            $code = 404 ;
+            $allowedExtenation = array('jpg','png' ,'PNG','jpeg');
+            $imgExtension      = end(explode('.' , $fileName));
+            if(in_array($imgExtension , $allowedExtenation)):  //chk extentaion
+                if($fileSize < 2000000): //chk size
+                    $imgProb   = "تم رفع الصور بنجاح " ;
+                    $success   = true ; $code = 200 ;
+                else: $imgProb = "مساحة الصورة اكبر من 2ميجابايت";$success = false ;
+                endif;
+            else: $imgProb = "امتداد الصور المسموح بها jpg - jpeg - png " ;$success = false ;
+            endif;
+        else: $imgProb = "برجاء ادخال الصور";  $success = false ;
+        endif;
+    return ["msg"=> $imgProb , "success"=>$success ,'code'=>$code ];
+    }
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
@@ -159,7 +220,7 @@ class OrdersTable extends Table
         $new->delivery_duration = $getExtraInfo["delivery_duration"];
         $new->total_amount = $getExtraInfo["total_amount"];
         $new->items_amount >= 400 ? $new->items_amount = $getExtraInfo["items_amount"] : "";
-     
+        $new->order_temp_id = substr("".time()."", -7).rand(999,99999) ; 
         if($this->save($new)){
             //save items 
             foreach($obj["fields"]["items"] as $k=>$v){
@@ -169,7 +230,25 @@ class OrdersTable extends Table
                 $items->quantity = $v["quantity"];
                 $items->order_id = $new->id ; 
                 $this->Cart->save($items);
+
+                $proQuns[] = $v["quantity"];
+                $proIDS[] = $v["product_id"];
             }
+
+            
+            //update qun
+            $this->minusQunOnStore(["proIDS"=>$proIDS , "proQuns"=>$proQuns , "type"=>"minus"]) ;
+            // //update qun
+            // $getProByIds = $this->Cart->Products->find()->where(['Products.id IN'=>$proIDS])->toArray();
+            // if($getProByIds):
+            //     foreach($getProByIds as $k=>$v){
+            //             $this->Cart->Products->updateQuantity(["product_id"=>$v["id"], "newQun"=>$proQuns[$k] , "type"=>"minus"   ]);
+            //     }
+            // endif;
+            
+         
+            
+          
            $res = ["success"=>true ,"data"=>$new,  "msg"=>"تم اضافة الطلب بنجاح"]; 
 
            //delete session 
@@ -181,6 +260,93 @@ class OrdersTable extends Table
         }
 
      return $res ; 
+    }
+    /////////
+    function newPrescriptionOrder($obj){  //promo , full_address , address_id , photo , notes , user_id
+        $new = $this->newEmptyEntity();
+        
+        $new = $this->patchEntity($new , $obj["fields"] , ['validate'=>'newPrescription'] );
+
+        $new->discount = 0 ;
+        $new->delivery_cost = 15 ;
+        $new->delivery_duration =      "من ساعة الى ساعتين" ;
+        $new->order_temp_id = substr("".time()."", -7).rand(999,99999) ; 
+
+        // //upload file
+        !$new->getErrors() ? $uploadFile = UploadFile::uploadSinglePhoto(["photoName"=>"prescription_file2" , "path"=>"library/prescriptions" ]) : "";  
+        $new->prescription_file = $uploadFile["name"]; 
+       
+       
+        if($this->save($new)){
+           $res = ["success"=>true ,"data"=>$new,  "msg"=>"تم اضافة الطلب بنجاح"]; 
+        }else{
+            $res = ["success"=>false ,"data"=>$new, "msg"=>"لم يتم اضافة الطلب"]; 
+        }
+     
+     return $res ; 
+    }
+    /////////
+    function getMyOrders($userID){
+        $orders = $this->find()
+                ->where(['Orders.user_id'=>$userID])
+                ->limit(10)
+                ->orderBy(['Orders.id'=>'DESC'])
+                ->contain([
+                    'Cart'=>['Products'],
+                    'Addresses'=>function($q){return $q->where(['soft_delete'=>'no']) ; }
+                    ])
+              //  ->contain(['Cart'=>['Products'],'Addresses'])
+                ->toArray();
+
+           $orders ? $res = ["success"=>true , "data"=>$orders , "msg"=>"طلاباتي"]  
+                   : $res = ["success"=>false , "data"=>[] , "msg"=>"لايوجد طلبات"] ;      
+
+        return $res ; 
+    }
+///////////////////////////////
+
+
+    function changeStatus($obj){ // "orderID"=>$orderID , "status"=>$status
+       
+        $updateStatus = $this->find()
+                ->where(['id'=>$obj["orderID"]])
+                ->orderBy(['id'=>'DESC'])
+                ->contain(['Cart'])
+                ->first();
+          // echo json_encode($updateStatus);exit;
+            if($updateStatus){
+                $proQuns = array_column($updateStatus["cart"],"quantity") ;
+                $proIDS = array_column($updateStatus["cart"],"product_id") ;
+            
+                $updateStatus->status = $obj["status"];
+                $updateStatus->reject_reason = $obj["reject_reason"];
+                $obj["status"] == "approved" ? $msg = "تم تأكيد الطلب بنجاح" : $msg ="تم رفض الطلب ";
+                //send mail to user
+                $this->save($updateStatus) ? $res = ["success"=>true , "data"=>$updateStatus , "msg"=>$msg]  
+                        : $res = ["success"=>false , "data"=>$updateStatus , "msg"=>""]  ;
+                //
+            //update qun
+            $res["success"] == true && $obj["status"] == "rejected" ? $this->minusQunOnStore(["proIDS"=>$proIDS , "proQuns"=>$proQuns ,"type"=>"plus"]) : "";
+
+            //add to wallet
+            $res["success"] == true && $obj["status"] == "approved" ?   TableRegistry::getTableLocator()->get('Wallet')->addToWallet(["user_id"=> $updateStatus["user_id"] , "points"=> $updateStatus["items_amount"] ]) : ""; 
+
+            }else{
+                $res = ["success"=>false , "data"=>[] , "msg"=>"الطلب غير موجود"] ;    
+            }
+
+         
+
+        return $res ; 
+    }
+    /////////
+    function minusQunOnStore($obj){  //["proIDS"=>$proIDS , "proQuns"=>$proQuns]
+        $getProByIds = $this->Cart->Products->find()->where(['Products.id IN'=>$obj["proIDS"]])->toArray();
+        if($getProByIds):
+            foreach($getProByIds as $k=>$v){
+                    $this->Cart->Products->updateQuantity(["product_id"=>$v["id"], "newQun"=>$obj["proQuns"][$k] , "type"=> $obj["type"]   ]);
+            }
+        endif;  
     }
     /////////
 }

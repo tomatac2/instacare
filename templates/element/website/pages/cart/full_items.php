@@ -31,13 +31,38 @@
                             <div class="shoping-cart-table table-responsive"  style="    border: 1px solid #ddd;   overflow: unset !important;">
                                 <table class="table">
                                     <tbody>
+                                        <?php 
+                                        if($gift):
+                                           foreach($gift as $giftV){
+                                          echo '<tr id="gift_'.$giftV["product_id"].'" style="background-color: #0a9a7326;">
+                                            <td class="cart-product-remove" style="color: red;font-weight:600;" >x  
+                                                <input type="hidden" class="proID" value="'.$giftV["product_id"].'">
+                                                <input type="hidden" class="type" value="gift">
+                                            </td>
+                                            <td class="col-sm-4 cart-product-image" style="    text-align: center;">
+                                                <a href="'.URL.'products/details/'.$giftV["product_id"].'"><img src="'.URL.$giftV["photo"].'" alt="#"></a>
+                                            </td>
+                                            <td class="col-sm-6 cart-product-info" style="    text-align: center;">
+                                                <h4><a href="'.URL.'products/details/'.$giftV["product_id"].'">'.$giftV["name"].'</a></h4>
+                                                </td>
+                                            <td class="col-sm-2 cart-product-info" style="    text-align: center;">
+                                                    هدية <i class="fa fa-gift" style="padding: 5px;color:rgb(10 154 115)"></i>
+                                                </td>
+                                            
+                                              </tr>' ;
+                                           } 
+                                        endif;
+                                        ?>
                                         <?php foreach($cart as $items){ 
                                                 $price[] = $items["price"];
                                                 $quantity[] = $items["quantity"];
                                                 $amount[] = $items["quantity"] * $items["price"] ; 
                                             ?>
                                             <tr id="item_<?=$items["product_id"]?>">
-                                                <td class="cart-product-remove" style="color: red;font-weight:600;" >x  <input type="hidden" class="proID" value="<?=$items["product_id"]?>"> </td>
+                                                <td class="cart-product-remove" style="color: red;font-weight:600;" >x 
+                                                     <input type="hidden" class="proID" value="<?=$items["product_id"]?>">
+                                                     <input type="hidden" class="type" value="cart">
+                                                </td>
                                                 <td class="cart-product-image">
                                                     <a href="<?=URL.'products/details/'.$items["product_id"]?>"><img src="<?=URL.$items["photo"]?>" alt="#"></a>
                                                 </td>
@@ -108,7 +133,8 @@
                         <div class="container pt-15">
                             <h4>عنوان التوصيل  </h4>
                             <div class="row">
-                                <?php if($addresses):?>
+                                <?php 
+                                if($addresses && count($addresses) > 0 ){?>
                                     <label for="">اختر عنوان التوصيل</label>
                                     <div class="col-md-12">
                                         <div>
@@ -121,9 +147,10 @@
                                         </div>
                                         <textarea name="full_address"  placeholder="أكتب العنوان بالتفصيل او اختر العنوان ...." name="" id="" style="min-height: 80px;"><?=$extraCart["full_address"]?$extraCart["full_address"]:""?></textarea>
                                     </div>
-                                <?php 
-                            else : echo '<textarea name="full_address" placeholder="أكتب العنوان بالتفصيل او اختر العنوان ...." name="" id="" style="min-height: 80px;">'.$extraCart["full_address"]?$extraCart["full_address"]:"".'</textarea>';
-                            endif; ?>
+                                <?php }    else { ?>
+                                    <textarea name="full_address"  placeholder="أكتب العنوان بالتفصيل او اختر العنوان ...." name="" id="" style="min-height: 80px;"><?=$extraCart["full_address"]?$extraCart["full_address"]:""?></textarea>
+                                 <!-- echo '<textarea name="full_address" placeholder="أكتب العنوان بالتفصيل او اختر العنوان ...." name="" id="" style="min-height: 80px;">'.$extraCart["full_address"]?$extraCart["full_address"]:"".'</textarea>'; -->
+                            <?php } ?>
 
                                             
                         </div>
@@ -153,11 +180,16 @@
     <script>
         $(function(){
 
+
             $(".cart-product-remove").click(function(){
+            var type  = $(this).find(".type").val();
             var proID = $(this).find(".proID").val();
 
+            console.log(type);
+            console.log(proID);
+        
                 $.ajax({
-                        url: '<?=$this->Url->build('/')?>cart/removeFromCart?proID='+proID , 
+                        url: '<?=$this->Url->build('/')?>cart/removeFromCart?proID='+proID+'&type='+type , 
                         type: 'GET',
                         cache: false,
                         headers: {
@@ -165,7 +197,7 @@
                             },
                         success: function(res){
                           //  console.log($.parseJSON(res));
-                            $("#item_"+proID).remove();
+                          type == "gift" ?   $("#gift_"+proID).remove() :  $("#item_"+proID).remove();
                             
                        }
                 });
@@ -255,7 +287,7 @@
                                 <div class="row">
                                     <div class="col-12">
                                          <div class="modal-product-info" style="    text-align: center; padding: 40px;">
-                                            <p class="added-cart" style="    font-size: 24px;"><i class="fa fa-check-circle"></i> تم تأكيد طلبك بنجاح سيتم تأكيده ويصلك فى خلال ساعة - ساعتين</p>
+                                            <p class="added-cart" style="    font-size: 24px;"><i class="fa fa-check-circle"></i> تم استلام طلبك بنجاح سيتم تأكيده ويصلك فى خلال ساعة - ساعتين</p>
                                             <div class="btn-wrapper">
                                                 <a href="<?=URL?>" class="theme-btn-1 btn btn-effect-1">الذهاب الى الرئيسية</a>
                                             </div>

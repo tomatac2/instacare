@@ -58,10 +58,10 @@
                                         <label for="price" class="form-label fw-semibold text-primary-light text-sm mb-8">  سعر المنتج   <span class="text-danger-600">*</span></label>
                                          <?= $this->Form->control('price', [ "type"=>"number",'label'=>false,'class' => 'form-control radius-8',  "placeholder"=>"ادخل سعر المنتج ", 'error' => ['class' => 'text-danger']  ]) ?>
                                     </div>
-                                    <div class="mb-20">
+                                    <!-- <div class="mb-20">
                                         <label for="offer_price" class="form-label fw-semibold text-primary-light text-sm mb-8">  سعر مخفض   <span class="text-danger-600">*</span></label>
                                          <?= $this->Form->control('offer_price', [ "type"=>"number",'label'=>false,'class' => 'form-control radius-8',  "placeholder"=>"ادخل سعر مخفض ", 'error' => ['class' => 'text-danger']  ]) ?>
-                                    </div>
+                                    </div> -->
                                     <div class="mb-20">
                                         <!-- <label for="offer_price" class="form-label fw-semibold text-primary-light text-sm mb-8">  <span class="text-danger-600">*</span></label> -->
                                          <?= $this->Form->control('description', [ 'id'=>'desc',"type"=>"hidden",'label'=>false,'class' => 'form-control radius-8',  "placeholder"=>"ادخل وصف المنتج ", 'error' => ['class' => 'text-danger']  ]) ?>

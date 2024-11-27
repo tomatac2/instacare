@@ -44,15 +44,18 @@ class AddressesController extends AppController
      */
     public function add()
     {
+        $this->viewBuilder()->setLayout('website');
+        $userID = $this->Authentication->getIdentity()->id ;
         $address = $this->Addresses->newEmptyEntity();
         if ($this->request->is('post')) {
-            $address = $this->Addresses->patchEntity($address, $this->request->getData());
+            $address = $this->Addresses->patchEntity($address, $this->request->getData() );
+            $address->user_id = $userID ; 
             if ($this->Addresses->save($address)) {
-                $this->Flash->success(__('The address has been saved.'));
+                $this->Flash->success(__('تم إضافة العنوان بنجاح'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(URL.'users/profile?tab=2');
             }
-            $this->Flash->error(__('The address could not be saved. Please, try again.'));
+        
         }
         $users = $this->Addresses->Users->find('list', limit: 200)->all();
         $this->set(compact('address', 'users'));
@@ -91,13 +94,16 @@ class AddressesController extends AppController
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $address = $this->Addresses->get($id);
-        if ($this->Addresses->delete($address)) {
-            $this->Flash->success(__('The address has been deleted.'));
+        $address = $this->Addresses->get($id , 
+        ['conditions'=> ["user_id"=> $this->Authentication->getIdentity()->id ] ]
+    );
+        $address->soft_delete = "yes";
+        if ($this->Addresses->save($address)) {
+            $this->Flash->success(__('تم الحذف بنجاح'));
         } else {
-            $this->Flash->error(__('The address could not be deleted. Please, try again.'));
+            $this->Flash->error(__('لم يتم الحذف'));
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(URL.'users/profile?tab=2');
     }
 }

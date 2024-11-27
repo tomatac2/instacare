@@ -74,6 +74,9 @@ class ProductsTable extends Table
         $this->hasMany('Store', [
             'foreignKey' => 'product_id',
         ]);
+        $this->hasMany('Gifts', [
+            'foreignKey' => 'product_id',
+        ]);
     }
 
     /**
@@ -225,5 +228,50 @@ class ProductsTable extends Table
                 ->toArray();
         
         return $q ; 
+    }
+    //////////////////////
+
+    function searchByCatSubCatsName($obj){  //["name"=>$name , "cat"=>$cat , "subCat"=>$subCat]
+
+        $con = [
+            !empty($obj["name"]) => [
+                "OR"=>[
+                    ["Products.name_ar LIKE"=> "%".$obj["name"]."%"],
+                    ["Products.name_en LIKE"=> "%".$obj["name"]."%"],
+                ]
+            ],
+            is_numeric($obj["cat"]) && !is_numeric($obj["subCat"]) => ["Products.category_id"=>$obj["cat"]],
+            is_numeric($obj["subCat"]) => ["Products.inner_category_id"=>$obj["subCat"]],
+            is_numeric($obj["showHome"]) => ["Products.show_on_home"=>$obj["showHome"]]
+        ] ;
+        //   echo json_encode($con);
+        //   exit;
+            $query = $this->find() 
+                        ->where($con[true]) 
+                        ->contain(['Categories', 'InnerCategories', 'Brands']);
+
+        return $query ;
+
+    }
+    //////////////////////
+
+    function updateQuantity ($obj){
+        //$this->Store->Products->updateQuantity(["product_id"=>$newQun["product_id"], "newQun"=>$newQun]);
+        $getProduct = $this->find()
+                        ->where(['Products.id'=>$obj["product_id"]])
+                        ->first();
+        $oldQun =$getProduct["quantity"];
+        if($getProduct){
+          $obj["type"]=="minus" ?  $getProduct->quantity =   $oldQun - $obj["newQun"]  
+                                :  $getProduct->quantity =   $oldQun + $obj["newQun"]  ; 
+                              
+           $this->save($getProduct);
+           
+           $res = ["success"=>true , "msg"=>"تم الحفظ بنجاح"];                     
+        }else{
+            $res = ["success"=>false , "msg"=>"لم يتم الحفظ"];        
+        }
+
+        return $res ; 
     }
 }

@@ -161,6 +161,21 @@ class UsersTable extends Table
 
         return $validator;
     }
+    public function validationChangePass(Validator $validator): Validator
+    {
+        $validator
+                 ->notEmptyString('password', 'ادخل كلمة المرور')
+                 ->notEmptyString('cpassword', 'ادخل تأكيد كلمة المرور')
+                 ->add('cpassword', [
+                    'mustMatch'=>[
+                        'rule'=>'checkForSamePassword',
+                        'provider'=>'table',
+                        'message'=>__('كلمة المرور غير متطابقة')
+                    ]
+                ])  ;    
+
+        return $validator;
+    }
 
     public function checkForSamePassword($value, $context) {
         if(!empty($value) && $value != $context['data']['password'] ) {
@@ -177,6 +192,28 @@ class UsersTable extends Table
         $update = $this->patchEntity($update , $obj["fields"] , ["validate"=>'editUser']) ; 
         $this->save($update) ? $res = ["success"=>true , "msg"=>"تم تحديث الملف الشخصي بنجاح" , "data"=>$update] 
                             : $res = ["success"=>false , "msg"=>"لم يتم تحديث الملف الشخصي" , "data"=>$update]  ; 
+
+        return $res ; 
+    }
+    ///////////
+    function changePasswordLogin($obj){   //fields , user_id
+        $changePass = $this->get($obj["user_id"]);
+
+        $changePass = $this->patchEntity($changePass , $obj["fields"] , ["validate"=>'changePass']) ; 
+        $this->save($changePass) ? $res = ["success"=>true , "msg"=>"تم تغيير كلمة المرور بنجاح" , "data"=>$changePass] 
+                            : $res = ["success"=>false , "msg"=>"لم يتم تغيير كلمة المرور" , "data"=>$changePass]  ; 
+
+        return $res ; 
+    }
+
+    /////////////////////////
+
+
+    function getUser($userID){   //fields , user_id
+        $getUserData = $this->find()->where(["id"=>$userID])->first();
+
+        $getUserData ? $res = ["success"=>true , "msg"=>"بيانات المستخدم" , "data"=>$getUserData] 
+                     : $res = ["success"=>false , "msg"=>"برجاء تسجيل الدخول" , "data"=>json_decode("{}")]  ; 
 
         return $res ; 
     }

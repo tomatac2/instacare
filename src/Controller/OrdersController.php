@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
+use Cake\ORM\TableRegistry;
 
 /**
  * Orders Controller
@@ -10,6 +11,109 @@ namespace App\Controller;
  */
 class OrdersController extends AppController
 {
+
+    //ajax
+    function liveOrders(){
+        $this->viewBuilder()->disableAutoLayout(false);
+          
+        $ids = $this->request->getData('ids') ;
+        $ids ? $ids = explode(',',$ids) : $ids = [0];
+     
+       
+        $query = $this->Orders->find()
+            ->where(['Orders.status'=>"pending" , "Orders.id not IN"=> $ids])
+            ->orderBy(['Orders.id'=>'ASC'])
+            ->contain(['Cart'=>['Products'], 'Users', 'Addresses'])
+            ->limit(50);
+        $orders = $this->paginate($query);
+
+
+    
+     //   $lastOrderID == $currentLastID || $lastOrderID > $currentLastID ? $orders = [] :"";  
+
+        // echo $lastOrderID;
+        // echo $currentLastID;
+        $this->set(compact('orders'));
+    }
+
+    ///////////
+
+    function changeOrderStatus(){
+        $this->viewBuilder()->disableAutoLayout(false);
+        $orderID = $_GET["orderID"];
+        $status = $_GET["status"];
+        $reject_reason = $_GET["reject_reason"];
+        $changeStatus = $this->Orders->changeStatus(["orderID"=>$orderID , "status"=>$status ,"reject_reason"=>$reject_reason]);
+        $this->set(compact('changeStatus'));
+
+    }
+
+
+    function currentOrders(){
+        $this->viewBuilder()->setLayout("dashboard");
+
+        $query = $this->Orders->find()
+            ->where(['status'=>"pending"])
+            ->orderBy(['Orders.id'=>'ASC'])
+            ->contain(['Cart'=>['Products'], 'Users', 'Addresses'])
+            ->limit(50);
+
+          
+        $orders = $this->paginate($query);
+       // dd($query->toArray());
+        $this->set(compact('orders'));
+    }
+ 
+    function prescription(){
+     
+        $this->viewBuilder()->setLayout("website");
+
+        $userID = $this->Authentication->getIdentity()->id ;
+        
+        $userID ?  $addresses = TableRegistry::getTableLocator()->get('Addresses')->getMyAddresses($userID)["data"] :"";
+
+        if($this->request->is("post")){
+            
+           // dd($this->request->getData());
+        $req = $this->request->getData();
+        $fields = [
+            "user_id"=>$userID,
+            "address_id"=>$req["address_id"],
+            "full_address"=>$req["full_address"],
+            "order_type"=> "prescription",
+            "notes"=> $req["notes"],
+            "prescription_file2"=>  $req["prescription_file2"],
+            "promo"=>  $req["promo"],
+        ];
+       
+        if(!$userID) return $this->redirect(URL.'users/login?prescription=1'); 
+
+        //create new address
+        $fields["full_address"] && !$fields["address_id"]? $fields["address_id"] = TableRegistry::getTableLocator()->get('Addresses')->newAddress(["full_address"=>$fields["full_address"] , "user_id"=>$fields["user_id"] ]) : ""; 
+       
+    
+        //create new order 
+        $prescription = TableRegistry::getTableLocator()->get('Orders')->newPrescriptionOrder(["fields"=>$fields]);
+       // dd($this->request->getData());
+        $err = $prescription["data"]->getErrors() ; 
+       
+        if($err){
+            foreach($err as $errs){
+            foreach($errs as $msg){
+                $this->Flash->error(__($msg));
+            }
+            }
+           //return $this->redirect(['controller' => 'Orders', 'action' => 'prescription']); //exit();
+        }else{
+            $this->Flash->success(__('تم اضافة طلبك بنجاح سيتم مراجعة طلبك وتأكيده'));
+            return $this->redirect(URL); //exit();
+        }
+
+    }
+
+        $this->set(compact('addresses','prescription'));
+
+    }
     /**
      * Index method
      *
@@ -17,7 +121,11 @@ class OrdersController extends AppController
      */
     public function index()
     {
+        $this->viewBuilder()->setLayout("dashboard");
+
         $query = $this->Orders->find()
+            ->where(['status !='=>"pending"])
+            ->orderBy(['Orders.id'=>'DESC'])
             ->contain(['Cart', 'Users', 'Addresses']);
         $orders = $this->paginate($query);
 

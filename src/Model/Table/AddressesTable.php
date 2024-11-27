@@ -68,51 +68,40 @@ class AddressesTable extends Table
      */
     public function validationDefault(Validator $validator): Validator
     {
-        $validator
-            ->integer('user_id')
-            ->allowEmptyString('user_id');
 
-        $validator
-            ->scalar('is_primary')
-            ->allowEmptyString('is_primary');
-
-        $validator
-            ->numeric('address_lat')
-            ->allowEmptyString('address_lat');
-
-        $validator
-            ->numeric('address_long')
-            ->allowEmptyString('address_long');
 
         $validator
             ->scalar('address_type')
-            ->maxLength('address_type', 55)
-            ->allowEmptyString('address_type');
+            ->maxLength('address_type', 55 ,'النص كبير')
+            ->notEmptyString('address_type','برجاء ادخل نوع العنوان');
+
+
+        $validator  ->notEmptyString('full_address','برجاء كتابة العنوان تفصيلاً');
 
         $validator
             ->scalar('street_name')
             ->maxLength('street_name', 255)
-            ->allowEmptyString('street_name');
+            ->notEmptyString('street_name',"برجاء ادخل اسم الشارع");
 
         $validator
             ->scalar('building_number')
             ->maxLength('building_number', 100)
-            ->allowEmptyString('building_number');
+            ->notEmptyString('building_number',"برجاء ادخل رقم المبني");
 
         $validator
             ->scalar('floor_number')
             ->maxLength('floor_number', 100)
-            ->allowEmptyString('floor_number');
+            ->notEmptyString('floor_number',"برجاء كتابة رقم الدور");
 
         $validator
             ->scalar('apartment_number')
             ->maxLength('apartment_number', 100)
-            ->allowEmptyString('apartment_number');
+            ->notEmptyString('apartment_number',"برجاء كتابة رقم الشقة");
 
         $validator
             ->scalar('unique_mark')
             ->maxLength('unique_mark', 100)
-            ->allowEmptyString('unique_mark');
+            ->notEmptyString('unique_mark',"برجاء ادخال علامة مميزة");
 
         return $validator;
     }
@@ -135,8 +124,8 @@ class AddressesTable extends Table
     function newAddress($fields){
        
         //chk old address by full_address 
-        $chkOldAdd = $this->find()->where(['user_id'=>$fields["user_id"],"full_address"=>$fields["full_address"]])->first();
-       
+        $chkOldAdd = $this->find()->where(['user_id'=>$fields["user_id"],"full_address"=>$fields["full_address"],'soft_delete'=>'no'])->first();
+     
         if(!$chkOldAdd):
             $new = $this->newEmptyEntity();
             $new = $this->patchEntity($new , $fields );
@@ -147,5 +136,22 @@ class AddressesTable extends Table
         endif; 
         return $address_id ; 
     }
+    /////////////////
+
+      /////////
+      function getMyAddresses($userID){
+        $addresses = $this->find()
+                ->where(['user_id'=>$userID])
+                ->limit(10)
+                ->orderBy(['id'=>'DESC'])
+                ->where(['soft_delete'=>'no'])
+                ->toArray();
+
+           $addresses ? $res = ["success"=>true , "data"=>$addresses , "msg"=>"عنوايني"]  
+                      : $res = ["success"=>false , "data"=>[] , "msg"=>"لايوجد عناوين"] ;      
+
+        return $res ; 
+    }
+    /////////
     
 }

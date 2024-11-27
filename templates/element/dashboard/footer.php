@@ -41,6 +41,7 @@
 <script src="<?= $this->Url->build('/') ?>dashboard/assets/js/editor.quill.js"></script>
 <script src="<?= $this->Url->build('/') ?>dashboard/assets/js/editor.katex.min.js"></script>
 
+
   <script>
     // Editor Js Start
     const quill = new Quill('#editor', {
@@ -52,8 +53,13 @@
       theme: 'snow',
     });
     // Editor Js End
-    // =============================== Upload Single Image js start here ================================================
-    const fileInput = document.getElementById("upload-file");
+
+
+  </script>
+
+  <script>
+        // =============================== Upload Single Image js start here ================================================
+        const fileInput = document.getElementById("upload-file");
     const imagePreview = document.getElementById("uploaded-img__preview");
     const uploadedImgContainer = document.querySelector(".uploaded-img");
     const removeButton = document.querySelector(".uploaded-img__remove");
@@ -71,7 +77,6 @@
         fileInput.value = ""; 
     });
     // =============================== Upload Single Image js End here ================================================
-
   </script>
 </body>
 </html>

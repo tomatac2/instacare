@@ -55,5 +55,27 @@ class Order extends Entity
         'cart' => true,
         'user' => true,
         'address' => true,
+        'order_type' => true,
+        'order_temp_id' => true,
+        'prescription' => true,
     ];
+
+    protected array $_virtual = ['status_ar'];
+    
+    function _getStatusAr($status)
+    {
+        $status = $this->status ; 
+        $status?$status:$status="pending" ; 
+        $statusArObj = [
+            "pending"=>"<span style='color:blue'>غير مؤكد</span>",
+            "approved"=>"<span>نشط</span>",
+            "rejected"=>"<span style='color:red'>مرفوض</span>",
+            "refuned"=>"<span style='color:orange'>مسترد</span>",
+            "on_delivery"=>"<span style='color:brown'>في الطريق</span>",
+            "completed"=>"<span style='color:green'> مكتمل</span>",
+        ] ;
+       return  $statusArObj[$status] ;
+    }
+
+
 }

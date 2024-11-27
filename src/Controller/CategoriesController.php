@@ -10,6 +10,10 @@ use App\Hellpers\UploadFile;
  */
 class CategoriesController extends AppController
 {
+
+    function finger(){
+        
+    }
     /**
      * Index method
      *

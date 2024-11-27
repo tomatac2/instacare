@@ -25,6 +25,8 @@ class CartController extends AppController
         $session = $this->request->getSession();
         $session->delete("Cart");  
         $session->delete("extraCart");  
+        $session->delete("Gift");  
+        $session->delete("totalPoints");  
         $this->set(compact('session'));
     }
 
@@ -44,12 +46,27 @@ class CartController extends AppController
 
     function removeFromCart(){
         $this->viewBuilder()->disableAutoLayout(false);
+      
 
         $proID = $_GET["proID"];
+        $type = $_GET["type"];
         //delete cart session 
         $session = $this->request->getSession();
         $session->delete("Cart.$proID");  #custom product
-     
+      
+        if($type == "gift"):
+            $gift = $session->read("Gift");
+
+            //points
+            $totalPoints = $session->read("totalPoints");
+            $proPoints = $gift[$proID]["points"] ;
+            $totalPointsAfterDelSession = $totalPoints + $proPoints ; 
+
+            $session->delete("Gift.$proID");  #custom product
+
+            $session->write("totalPoints" , $totalPointsAfterDelSession);
+        endif;
+
         $this->set(compact('session'));
     }
 
@@ -78,11 +95,12 @@ class CartController extends AppController
                 'price' => $product->price,
                 'quantity' => $qun ? $qun : 1
             ];
+
         }
 
         // Save updated cart to session
         $session->write('Cart', $cart);
-
+        
 
         $this->set(compact('cart'));
    
@@ -96,15 +114,16 @@ class CartController extends AppController
         $session = $this->request->getSession();
 
         $cart = $session->read('Cart');
+        $gift = $session->read('Gift');
+
+        // $session->clear();
+        // exit ; 
         $extraCart = $session->read('extraCart');
 
    
         $userID = $this->Authentication->getIdentity()->id ;
         
-        $userID ?  $addresses =   TableRegistry::getTableLocator()->get('Addresses')
-            ->find()
-            ->where(['user_id'=>$userID])
-            ->toArray() : "";
+        $userID ?  $addresses = TableRegistry::getTableLocator()->get('Addresses')->getMyAddresses($userID)["data"] :"";
        
         if($this->request->is("post")){
             $req = $this->request->getData();
@@ -127,7 +146,7 @@ class CartController extends AppController
                 return $this->redirect(['controller' => 'Cart', 'action' => 'cart']); exit();
             }
         }
-        $this->set(compact('cart','extraCart','addresses','newOrder'));
+        $this->set(compact('cart','extraCart','addresses','newOrder','gift'));
     }
 
 

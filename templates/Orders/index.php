@@ -4,63 +4,55 @@
  * @var iterable<\App\Model\Entity\Order> $orders
  */
 ?>
-<div class="orders index content">
-    <?= $this->Html->link(__('New Order'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Orders') ?></h3>
-    <div class="table-responsive">
-        <table>
-            <thead>
+<div class="categories index content card basic-data-table">
+    <div class="card-header">  
+    <h3><?= __('الطلبات السابقة') ?></h3>
+    </div> 
+
+    <div class="table-responsive card-body">
+    <div id="dataTable_wrapper" class="dt-container dt-empty-footer">
+
+        <table class="table bordered-table mb-0 dataTable">
+             <thead>
                 <tr>
-                    <th><?= $this->Paginator->sort('id') ?></th>
-                    <th><?= $this->Paginator->sort('cart_id') ?></th>
-                    <th><?= $this->Paginator->sort('user_id') ?></th>
-                    <th><?= $this->Paginator->sort('address_id') ?></th>
-                    <th><?= $this->Paginator->sort('amount') ?></th>
-                    <th><?= $this->Paginator->sort('delivery_cost') ?></th>
-                    <th><?= $this->Paginator->sort('delivery_duration') ?></th>
-                    <th><?= $this->Paginator->sort('total_amount') ?></th>
-                    <th><?= $this->Paginator->sort('status') ?></th>
-                    <th><?= $this->Paginator->sort('reject_reason') ?></th>
-                    <th><?= $this->Paginator->sort('notes') ?></th>
-                    <th><?= $this->Paginator->sort('created') ?></th>
-                    <th><?= $this->Paginator->sort('modified') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
+                    <th><?= $this->Paginator->sort('user_id',['name'=>'إسم المستخدم']) ?></th>
+                    <th><?= $this->Paginator->sort('address_id',['name'=>'العنوان ']) ?></th>
+                    <th><?= $this->Paginator->sort('total_amount',['name'=>'اجمالي الطلب']) ?></th>
+                    <th><?= $this->Paginator->sort('order_type',['name'=>'نوع الطلب ']) ?></th>
+                    <th><?= $this->Paginator->sort('status',['name'=>'حالة الطلب ']) ?></th>
+                    <th><?= $this->Paginator->sort('notes',['name'=>'ملاحظات ']) ?></th>
+                    <th><?= $this->Paginator->sort('created',['name'=>'تاريخ الطلب ']) ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($orders as $order): ?>
                 <tr>
-                    <td><?= $this->Number->format($order->id) ?></td>
-                    <td><?= $order->hasValue('cart') ? $this->Html->link($order->cart->order_temp_id, ['controller' => 'Cart', 'action' => 'view', $order->cart->id]) : '' ?></td>
-                    <td><?= $order->hasValue('user') ? $this->Html->link($order->user->name, ['controller' => 'Users', 'action' => 'view', $order->user->id]) : '' ?></td>
-                    <td><?= $order->hasValue('address') ? $this->Html->link($order->address->id, ['controller' => 'Addresses', 'action' => 'view', $order->address->id]) : '' ?></td>
-                    <td><?= $order->amount === null ? '' : $this->Number->format($order->amount) ?></td>
-                    <td><?= $order->delivery_cost === null ? '' : $this->Number->format($order->delivery_cost) ?></td>
-                    <td><?= $order->delivery_duration === null ? '' : $this->Number->format($order->delivery_duration) ?></td>
-                    <td><?= $order->total_amount === null ? '' : $this->Number->format($order->total_amount) ?></td>
-                    <td><?= h($order->status) ?></td>
-                    <td><?= h($order->reject_reason) ?></td>
-                    <td><?= h($order->notes) ?></td>
-                    <td><?= h($order->created) ?></td>
-                    <td><?= h($order->modified) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $order->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $order->id]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $order->id], ['confirm' => __('Are you sure you want to delete # {0}?', $order->id)]) ?>
+                    <td><?=$order->user->name ?></td>
+                    <td style="    width: 200px;"><?=$order->address->full_address ?></td>
+                    <td><?= $order->total_amount  ?></td>
+                    <td><?= $order->order_type == "normal" ? "طلب عادي": "طلب روشتة"  ?></td>
+                    <td>
+                        <?= $order->status_ar   ?>
+                        <br>
+                        <?php   echo $order->reject_reason  ?  '<span style="color:red;    background: #ff000024;padding: 10px;">'.$order->reject_reason.'</span>'  : "" ;   ?>
                     </td>
+                     <td style="    width: 200px;"><?= h($order->notes)? h($order->notes):"---" ?></td>
+                    <td><?php 
+                        $created = "".$order->created."";
+                    echo $created ? date('Y-m-d',strtotime($created)) : ""; ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-    <div class="paginator">
+    </div>
+    <div class="paginator dt-paging paging_full_numbers">
         <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
+            <?= $this->Paginator->first('<< ' . __('أول')) ?>
+            <?= $this->Paginator->prev('< ' . __('سابق')) ?>
             <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
+            <?= $this->Paginator->next(__('تالي') . ' >') ?>
+            <?= $this->Paginator->last(__('أخير') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
     </div>
 </div>

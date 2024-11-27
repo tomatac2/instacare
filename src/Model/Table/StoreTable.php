@@ -62,15 +62,15 @@ class StoreTable extends Table
     {
         $validator
             ->integer('product_id')
-            ->allowEmptyString('product_id');
+            ->notEmptyString('product_id','اختر المنتج');
 
         $validator
             ->integer('quantity')
-            ->allowEmptyString('quantity');
+            ->notEmptyString('quantity',"ادخل الكمية");
 
         $validator
             ->date('purchase_date')
-            ->allowEmptyDate('purchase_date');
+            ->notEmptyString('purchase_date',"ادخل تاريخ الشراء");
 
         $validator
             ->scalar('notes')
@@ -93,4 +93,32 @@ class StoreTable extends Table
 
         return $rules;
     }
+
+    //////////
+
+    function addToStore($fields){  //["product_id"=>$product->id , "quantity"=>$req["quantity"] , "purchase_date"=> date("Y-m-d")]
+        $add = $this->newEmptyEntity();
+        $add = $this->patchEntity($add , $fields ) ; 
+        $this->save($add) ? $res = ["success"=>true , "msg"=>"تم إضافة الكمية بنجاح" , "data"=>$add] 
+                          : $res = ["success"=>false , "msg"=>"لم يتم الاضافة " , "data"=>$add]  ; 
+
+        return $res ; 
+    }
+    ////  
+    function updateQuantityProduct($q){  //["product_id"=>$product->id , "quantity", "type"]  
+       // dd($q);
+        $chk = $this->find()
+                    ->where(['product_id'=>$q["product_id"],'type'=>"product"])
+                    ->first()  ;
+        if($chk):
+            $update = $this->patchEntity($chk , ["quantity"=>$q["quantity"]]) ;
+            $this->save($update) ? $res = ["success"=>true , "msg"=>"تم تحديث الكمية بنجاح" , "data"=>$update] 
+                                 : $res = ["success"=>false , "msg"=>"لم يتم التحديث " , "data"=>$update]  ; 
+
+        else  : $res = ["success"=>false , "msg"=>"لم يتم التحديث " , "data"=>$q]  ; 
+        endif;
+
+        return $res ; 
+    }  
+    ///////
 }

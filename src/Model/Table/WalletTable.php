@@ -84,4 +84,29 @@ class WalletTable extends Table
 
         return $rules;
     }
+    //////////
+ 
+    function addToWallet($obj){ //["user_id"=> $updateStatus["user_id"] , "points"=> $updateStatus["items_amount"] ]
+        $q = $this->find()->where(['user_id'=>$obj["user_id"]])->first();
+        
+        if($q){
+           $q->points = $q["points"] + $obj["points"]; 
+        }else{
+           $q = $this->newEmptyEntity();
+           $q = $this->patchEntity($q , $obj);
+        }
+        $this->save($q) ? $res = ["success"=>true , 'msg'=>'تم إضافة النقاط بنجاح'] 
+                        : $res = ["success"=>false , 'msg'=>'لم يتم إضافة النقاط'] ;
+
+        return $res ; 
+    } 
+
+
+    ///////////////
+
+    function getPoint($userID){
+        $q = $this->findByUserId($userID?$userID:0)->first();
+        $q ? $points = $q["points"] : $points = 0 ;
+        return $points ; 
+    }
 }

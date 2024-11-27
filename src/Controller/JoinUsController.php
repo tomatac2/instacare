@@ -45,6 +45,7 @@ class JoinUsController extends AppController
      */
     public function index()
     {
+        $this->viewBuilder()->setLayout("dashboard");
         $query = $this->JoinUs->find();
         $joinUs = $this->paginate($query);
 

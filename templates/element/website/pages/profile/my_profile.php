@@ -20,26 +20,26 @@
             <div class="row mb-50">
                 <div class="col-md-6">
                     <label>الأسم :</label>
-                    <input type="text" name="name" value="<?= $auth->name ?>">
+                    <input type="text" name="name" value="<?= $getProfile["data"]->name ?>">
                 </div>
                 <div class="col-md-6">
                     <label> البريد الإلكتروني:</label>
-                    <input type="email" name="email" value="<?= $auth->email ?>">
+                    <input type="email" name="email" value="<?= $getProfile["data"]->email ?>">
                 </div>
                 <div class="col-md-6">
                     <label> رقم الموبيل:</label>
-                    <input type="text" name="mobile" value="<?= $auth->mobile ?>">
+                    <input type="text" name="mobile" value="<?= $getProfile["data"]->mobile ?>">
                 </div>
                 <div class="col-md-6">
                     <label> النوع :</label>
                     <br>
                     <div style="float: right;  padding: 7px;">
                         <div style="float: right;padding-top: 7px;padding-left: 7px; ">ذكر</div>
-                        <input <?= $auth->gender == "ذكر" ? "checked" : "" ?> type="radio" name="gender" value="ذكر" style="float: right; ">
+                        <input <?= $getProfile["data"]->gender == "ذكر" ? "checked" : "" ?> type="radio" name="gender" value="ذكر" style="float: right; ">
                     </div>
                     <div style="float: right; padding: 7px;">
                         <div style="float: right;padding-top: 7px;padding-left: 7px;  ">أنثي</div>
-                        <input type="radio" <?= $auth->gender == "أنثي" ? "checked" : "" ?> name="gender" placeholder="أنثي" style="float: right; ">
+                        <input type="radio" <?= $getProfile["data"]->gender == "أنثي" ? "checked" : "" ?> name="gender" placeholder="أنثي" style="float: right; ">
                     </div>
                 </div>
                 <div class="btn-wrapper">
