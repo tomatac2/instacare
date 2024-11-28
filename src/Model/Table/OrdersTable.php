@@ -205,61 +205,57 @@ class OrdersTable extends Table
         ] ;
     }
     ///
-    function newOrder($obj){  //promo , full_address , address_id , items , notes , user_id
+    function newOrder($obj){  //"fields"=> [promo , full_address , address_id , items , notes , user_id] ,  "session"=>$session
+        $gift = $obj["session"]->read("Gift") ?? [];
+
         $new = $this->newEmptyEntity();
         //get extra-orders 
         $getExtraInfo = $this->extraOrderInfo($obj["fields"]["items"]);
         $obj["fields"]["items_amount"]  = $getExtraInfo["items_amount"];
         
-        
         $new = $this->patchEntity($new , $obj["fields"] , ['validate'=>'newOrder'] );
      
-
         $new->discount = $getExtraInfo["discount"];
         $new->delivery_cost = $getExtraInfo["delivery_cost"];
         $new->delivery_duration = $getExtraInfo["delivery_duration"];
         $new->total_amount = $getExtraInfo["total_amount"];
         $new->items_amount >= 400 ? $new->items_amount = $getExtraInfo["items_amount"] : "";
         $new->order_temp_id = substr("".time()."", -7).rand(999,99999) ; 
+        !empty($gift) ? $new->gift_points =  array_sum(array_column($gift, 'points')) : ""; 
         if($this->save($new)){
-            //save items 
-            foreach($obj["fields"]["items"] as $k=>$v){
-                $items = $this->Cart->newEmptyEntity();
-                $items->user_id = $obj["fields"]["user_id"];
-                $items->product_id = $v["product_id"];
-                $items->quantity = $v["quantity"];
-                $items->order_id = $new->id ; 
-                $this->Cart->save($items);
-
-                $proQuns[] = $v["quantity"];
-                $proIDS[] = $v["product_id"];
-            }
-
-            
+            //save cart items 
+            $cartItems = $this->Cart->saveCartItems(["session"=>$obj["session"],"items"=>$obj["fields"]["items"] ,"user_id"=> $obj["fields"]["user_id"] ,"order_id"=>$new->id ]);
             //update qun
-            $this->minusQunOnStore(["proIDS"=>$proIDS , "proQuns"=>$proQuns , "type"=>"minus"]) ;
-            // //update qun
-            // $getProByIds = $this->Cart->Products->find()->where(['Products.id IN'=>$proIDS])->toArray();
-            // if($getProByIds):
-            //     foreach($getProByIds as $k=>$v){
-            //             $this->Cart->Products->updateQuantity(["product_id"=>$v["id"], "newQun"=>$proQuns[$k] , "type"=>"minus"   ]);
-            //     }
-            // endif;
-            
-         
-            
+            $this->minusQunOnStore(["proIDS"=>$cartItems["proIDS"] , "proQuns"=>$cartItems["proQuns"] , "type"=>"minus"]) ;
           
+            //save gift items 
+            // Push the array into the outer array
+            if(!empty($gift)){
+                $giftItems = $this->Cart->saveCartItems(["session"=>$obj["session"],"items"=>$gift ,"user_id"=> $obj["fields"]["user_id"] ,"order_id"=>$new->id ]);
+                //update qun
+                $this->minusQunOnStore(["proIDS"=>$giftItems["proIDS"] , "proQuns"=>$giftItems["proQuns"] , "type"=>"minus"]) ;
+                //
+                $this->Users->Wallet->changePoints(["type"=>"minus",'user_id'=>  $obj["fields"]["user_id"]  ,"remaning_points"=> $obj["session"]->read("totalPoints") ]);
+            }
+  
            $res = ["success"=>true ,"data"=>$new,  "msg"=>"تم اضافة الطلب بنجاح"]; 
 
-           //delete session 
-            $obj["session"]->delete('Cart');
-            $obj["session"]->delete('extraCart');
-       
+           //delete all sessions
+           $this->deleteSessions(["excute"=>"all","session"=>$obj["session"]]);
+          
         }else{
             $res = ["success"=>false ,"data"=>$new, "msg"=>"لم يتم اضافة الطلب"]; 
         }
 
      return $res ; 
+    }
+    /////////
+    function deleteSessions($obj){
+         //delete session 
+         $obj["session"]->delete('Cart');
+         $obj["session"]->delete('extraCart');
+         $obj["session"]->delete('Gift');
+         $obj["session"]->delete('totalPoints');
     }
     /////////
     function newPrescriptionOrder($obj){  //promo , full_address , address_id , photo , notes , user_id
@@ -315,15 +311,18 @@ class OrdersTable extends Table
                 ->first();
           // echo json_encode($updateStatus);exit;
             if($updateStatus){
-                $proQuns = array_column($updateStatus["cart"],"quantity") ;
-                $proIDS = array_column($updateStatus["cart"],"product_id") ;
+                $proCart = array_filter($updateStatus["cart"], function ($item) {return $item['type'] === "cart";});
+                $proGift = array_filter($updateStatus["cart"], function ($item) {  return $item['type'] === "gift";});
+
+                $proQuns = array_column($proCart,"quantity") ;
+                $proIDS = array_column($proCart,"product_id") ;
             
                 $updateStatus->status = $obj["status"];
                 $updateStatus->reject_reason = $obj["reject_reason"];
                 $obj["status"] == "approved" ? $msg = "تم تأكيد الطلب بنجاح" : $msg ="تم رفض الطلب ";
                 //send mail to user
                 $this->save($updateStatus) ? $res = ["success"=>true , "data"=>$updateStatus , "msg"=>$msg]  
-                        : $res = ["success"=>false , "data"=>$updateStatus , "msg"=>""]  ;
+                                           : $res = ["success"=>false , "data"=>$updateStatus , "msg"=>""]  ;
                 //
             //update qun
             $res["success"] == true && $obj["status"] == "rejected" ? $this->minusQunOnStore(["proIDS"=>$proIDS , "proQuns"=>$proQuns ,"type"=>"plus"]) : "";
@@ -331,11 +330,21 @@ class OrdersTable extends Table
             //add to wallet
             $res["success"] == true && $obj["status"] == "approved" ?   TableRegistry::getTableLocator()->get('Wallet')->addToWallet(["user_id"=> $updateStatus["user_id"] , "points"=> $updateStatus["items_amount"] ]) : ""; 
 
+            //return gift points if order rejected
+            if($res["success"] == true && $obj["status"] == "rejected" && $updateStatus["gift_points"] > 0):
+                //return gift points to wallet
+                $this->Users->Wallet->changePoints(["type"=>"plus",'user_id'=>  $updateStatus["user_id"]  ,"gift_points"=> $updateStatus["gift_points"] ]) ; 
+
+                //return product store 
+                $proQunsGift = array_column($proGift,"quantity") ;
+                $proIDSGift = array_column($proGift,"product_id") ;
+                $this->minusQunOnStore(["proIDS"=>$proIDSGift  , "proQuns"=>$proQunsGift , "type"=>"plus"]) ;
+              
+            endif;
+                
             }else{
                 $res = ["success"=>false , "data"=>[] , "msg"=>"الطلب غير موجود"] ;    
             }
-
-         
 
         return $res ; 
     }
@@ -344,9 +353,10 @@ class OrdersTable extends Table
         $getProByIds = $this->Cart->Products->find()->where(['Products.id IN'=>$obj["proIDS"]])->toArray();
         if($getProByIds):
             foreach($getProByIds as $k=>$v){
-                    $this->Cart->Products->updateQuantity(["product_id"=>$v["id"], "newQun"=>$obj["proQuns"][$k] , "type"=> $obj["type"]   ]);
+              $this->Cart->Products->updateQuantity(["product_id"=>$v["id"], "newQun"=>$obj["proQuns"][$k] , "type"=> $obj["type"]   ]);
             }
         endif;  
+
     }
     /////////
 }

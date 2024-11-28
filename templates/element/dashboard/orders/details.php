@@ -18,11 +18,14 @@
         </tr>
     <?php
         foreach($data["cart"] as $key=>$val):
-            echo '<tr>';
+            $val["type"]=="gift" ? $arr = ["price"=> '<i class="fa fa-gift" style=" padding: 5px;color:#0a9a73;"></i> هديه',"total"=> '<i class="fa fa-gift" style=" padding: 5px;color:#0a9a73;"></i> هديه',"style"=>"background: #42edbf42;"]
+                                :  $arr = ["price"=>$val["product"]["price"].' جنيه مصري' ,"total"=>$val["quantity"]*$val["product"]["price"].' جنيه مصري',"style"=>""];
+  
+            echo '<tr style="'.$arr["style"].'">';
                 echo '<td>'.$val["product"]["name_ar"].'</td>';
                 echo '<td>'.$val["quantity"].'</td>';
-                echo '<td>'.$val["product"]["price"].' جنيه مصري</td>';
-                echo '<td>'.$val["quantity"]*$val["product"]["price"].' جنيه مصري</td>';
+                echo '<td>'.$arr["price"].'</td>';
+                echo '<td>'.$arr["total"].'</td>';
             echo '</tr>';
         endforeach ; 
      ?>

@@ -58,6 +58,7 @@ class Order extends Entity
         'order_type' => true,
         'order_temp_id' => true,
         'prescription' => true,
+        'gift_points' => true,
     ];
 
     protected array $_virtual = ['status_ar'];

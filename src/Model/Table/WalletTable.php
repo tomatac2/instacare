@@ -109,4 +109,20 @@ class WalletTable extends Table
         $q ? $points = $q["points"] : $points = 0 ;
         return $points ; 
     }
+    /////////
+    function changePoints($obj){  //  $this->Users->Wallet->changePoints(["type"=>"minus", "gift_points","points"=> $obj["session"]->read("totalPoints") ]);
+        $q = $this->findByUserId($obj["user_id"]?$obj["user_id"]:0)->first();
+        if($q){
+            $oldPoints = $q["points"]; 
+
+            $obj["type"]== "minus" ? $q->points = $obj["remaning_points"] 
+                                   : $q->points = $oldPoints + $obj["gift_points"] ; 
+            $this->save($q);
+            $res = ["success"=>true , "msg"=>"تم تحديث النقاط بنجاح"];
+        }else{
+            $res = ["success"=>false , "msg"=>"المستخدم لايملك اى نقاط اضافية"];
+        }
+        return $res ; 
+    }
+    /////////
 }

@@ -109,4 +109,27 @@ class CartTable extends Table
 
         return $rules;
     }
+
+    ////////////////
+
+    function saveCartItems($obj){  //["items"=>$obj["fields"]["items"] ,"user_id"=> $obj["fields"]["user_id"] ,"order_id"=>$new->id ]
+      
+            //save items 
+              foreach($obj["items"] as $k=>$v){
+                $items = $this->newEmptyEntity();
+                $items->user_id = $obj["user_id"];
+                $items->product_id = $v["product_id"];
+                $items->quantity = $v["quantity"];
+                $items->order_id = $obj["order_id"] ; 
+                $items->type = $v["type"]?$v["type"]:"cart" ; 
+                $this->save($items);
+
+                $proQuns[] = $v["quantity"];
+                $proIDS[] = $v["product_id"];
+            }
+
+
+    return [  "proQuns"=>$proQuns , "proIDS"=>$proIDS   ] ;
+    }
+    
 }

@@ -43,5 +43,6 @@ class Cart extends Entity
         'user' => true,
         'product' => true,
         'orders' => true,
+        'type' => true,
     ];
 }

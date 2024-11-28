@@ -39,7 +39,8 @@ class GiftsController extends AppController
                 'photo' => $giftProduct->photo,
                 'price' => 0,
                 'quantity' => 1,
-                'points'=>$giftProduct["_matchingData"]["Gifts"]["points"]
+                'points'=>$giftProduct["_matchingData"]["Gifts"]["points"],
+                'type'=>'gift'
             ];
             $session->write('Gift', $gift);
            
